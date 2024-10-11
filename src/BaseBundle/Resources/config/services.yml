@@ -1,0 +1,34 @@
+services:
+#    f_base.example:
+#        class: BaseBundle\Example
+#        arguments: ["@service_id", "plain_value", "%parameter%"]
+  OneBookBase.doctrine.filter.configurator:
+      class: BaseBundle\Filter\Configurator
+      arguments:
+          - "@doctrine.orm.entity_manager"
+          - "@security.token_storage"
+          - "@annotation_reader"
+      tags:
+          - { name: kernel.event_listener, event: kernel.request }
+  template_type:
+        class: BaseBundle\Form\Type\TemplateVariablesType
+        arguments: ["@service_container"]
+        tags: [form.type]
+        public: true
+  captcha_type:
+        class: BaseBundle\Form\Type\CaptchaType
+        arguments: ["@service_container"]
+        tags: [form.type]
+        public: true
+  measurement_type:
+        class: BaseBundle\Form\Type\MeasurementType
+        arguments:
+            - '@security.token_storage'
+            - '@request_stack'
+        tags: [form.type]
+        public: true
+  helper:
+        class: BaseBundle\Service\Helper
+        public: true
+        arguments: ["@service_container"]
+ 

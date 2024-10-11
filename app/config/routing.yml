@@ -1,0 +1,39 @@
+work_place:
+    resource: "@WorkPlaceBundle/Controller/"
+    type:     annotation
+    prefix:   /
+
+
+dashboard:
+    resource: "@DashboardBundle/Controller/"
+    type:     annotation
+    prefix:   /
+
+file:
+    resource: "@FileBundle/Controller/"
+    type:     annotation
+
+
+
+fos_user:
+    resource: "@FOSUserBundle/Resources/config/routing/all.xml"
+fos_user_profile:
+    resource: "@FOSUserBundle/Resources/config/routing/profile.xml"
+    prefix: /user/profile
+users:
+    resource: "@UsersBundle/Controller/"
+    type:     annotation
+    prefix:   /
+    
+_base:
+    resource: "@BaseBundle/Controller/"
+    type:     annotation
+    prefix:   /
+
+
+#app:
+#    resource: '@AppBundle/Controller/'
+#    type: annotation
+_translation_edit_in_place:
+    resource: '@TranslationBundle/Resources/config/routing_edit_in_place.yml'
+    prefix:  /admin

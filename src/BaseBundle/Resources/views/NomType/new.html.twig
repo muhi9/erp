@@ -1,0 +1,43 @@
+{% extends "::base.html.twig" %}
+
+{% block title %}{{'nomtype.nomtype_add'|trans}}{% endblock %}
+
+
+{% block content_body %}
+
+<!-- begin:: Content Body -->
+
+<div class="row">
+  <div class="col-md-12">
+    <div class="k-portlet">
+      <div class="k-portlet__head">
+        <div class="k-portlet__head-label">
+        <a href="{{ path('nom_type_index', { 'page': 'nom_type_news'})}}" class="k-margin-r-5  btn btn-brand k-content__head-back-link"><i class="flaticon-reply"></i>{{'label.back'|trans }}</a>
+
+          <h3 class="k-portlet__head-label">{{'nomtype.nomtype_add'|trans}}</h3>
+        </div>
+      </div>
+{#{dump(form.buildDate)}#}
+{{ form_start(form) }}
+{{ form_widget(form) }}
+{{ form_end(form) }}
+    </div>
+  </div>
+</div>
+
+
+<!-- end:: Content Body -->
+
+{% endblock content_body %}
+
+
+{% block javascripts %}
+    {{ parent() }}
+{% javascripts filter='uglifyjs2' '@BaseBundle/Resources/public/js/nomtypeExtra.js'%}
+  <script src="{{ asset_url }}?r={{ver}}" type="text/javascript"></script>
+
+{% endjavascripts %}
+{% endblock %}
+{% block stylesheets %}
+    {{ parent() }}
+{% endblock %}

@@ -1,0 +1,26 @@
+{% block content %}
+{#{dump(form.buildDate)}#}
+{{ form_start(form) }}
+{{ form_widget(form) }}
+{{ form_end(form) }}
+{#% if reloadType == true %#}
+{#% endif %#}
+
+{% endblock %}
+
+{% block javascripts %}
+<script>
+$(function() {
+  $("#BaseBundle_basenoms select[name='BaseBundle_basenoms[type]']").on('change',function() {
+    //console.error('selected', $(this));
+    addNameByType($(this).val(), $(this).parent().parent());
+  });
+  setTimeout(function() {
+    var selected = $("select[name='BaseBundle_basenoms[type]']");
+    if(selected.val() != '') {
+      selected.change();
+    }
+  },200)
+})
+</script>
+{% endblock %}

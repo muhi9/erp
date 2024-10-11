@@ -1,0 +1,643 @@
+{% extends 'base.html.twig' %}
+
+
+{% block title %}{{title|default()|trans({'%username%':form.vars.data.fullName}) }}{% endblock %}
+
+
+{% block content_body %}
+
+{% import _self as _this %}
+
+{% macro contacts_template(form) %}
+    <li>
+        <div class="row">
+            <div class="col-3">
+                {{ form_widget(form.contactType) }}
+                {{ form_errors(form.contactType) }}
+            </div>
+            <div class="col-9">
+                {{ form_widget(form.info1, {attr: {placeholder: 'users.form.contact.'~form.vars.contact_type~'.placeholder'}}) }}
+                {{ form_errors(form.info1) }}
+            </div>
+        </div>
+        <button type="button" class="btn btn-delete btn-elevate">x</button>
+    </li>
+{% endmacro %}
+{% macro phone_template(form) %}
+    <li>
+        <div class="row">
+            <div class="col-3">
+                {{ form_widget(form.contactType) }}
+                {{ form_errors(form.contactType) }}
+            </div>
+            {#
+            <div class="col-3">
+                {{ form_widget(form.info2, {attr: {placeholder: 'users.form.contact.phone_code.placeholder'}}) }}
+                {{ form_errors(form.info2) }}
+            </div>
+            #}
+            <div class="col-9">
+                {{ form_widget(form.info1, {attr: {placeholder: 'users.form.contact.phone_number.placeholder'}}) }}
+                {{ form_errors(form.info1) }}
+            </div>
+            <script type="text/javascript">
+            inputMask('#'+'{{form.info1.vars.id}}');
+            </script>
+        </div>
+        <button type="button" class="btn btn-delete btn-elevate">x</button>
+    </li>
+{% endmacro %}
+
+
+
+
+{% macro address_template(form) %}
+    <li>
+        <div class="row">
+            <div class="col-12">
+                {{ form_widget(form.contactType) }}
+                {{ form_errors(form.contactType) }}
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                {{ form_widget(form.address1, {attr: {placeholder: 'users.form.addresse.address1.placeholder'}}) }}
+                {{ form_errors(form.address1) }}
+                {{ form_widget(form.address2, {attr: {placeholder: 'users.form.addresse.address2.placeholder'}}) }}
+                {{ form_errors(form.address2) }}
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-9">
+                {{ form_widget(form.place, {attr: {placeholder: 'users.form.addresse.place.placeholder'}}) }}
+                {{ form_errors(form.place) }}
+            </div>
+            <div class="col-3">
+                {{ form_widget(form.postcode, {attr: {placeholder: 'users.form.addresse.postcode.placeholder'}}) }}
+                {{ form_errors(form.postcode) }}
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                {{ form_widget(form.municipality, {attr: {placeholder: 'users.form.addresse.municipality.placeholder'}}) }}
+                {{ form_errors(form.municipality) }}
+            </div>
+            
+        </div>
+        <div class="row">
+            <div class="col-12">
+                {{ form_widget(form.country) }}
+                {{ form_errors(form.country) }}
+            </div>
+        </div>
+        <button type="button" class="btn btn-delete btn-elevate">x</button>
+    </li>
+{% endmacro %}
+
+{% macro document_template(form) %}
+    <li>
+        <div class="row">
+            <div class="col-12">
+                {{ form_widget(form.documentType) }}
+                {{ form_errors(form.documentType) }}
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                {{ form_widget(form.number, {attr: {placeholder: 'users.form.document.number.placeholder'}}) }}
+                {{ form_errors(form.number) }}
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                {{ form_widget(form.personalID, {attr: {placeholder: 'users.form.document.personalID.placeholder'}}) }}
+                {{ form_errors(form.personalID) }}
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                {{ form_widget(form.authority, {attr: {placeholder: 'users.form.document.authority.placeholder'}}) }}
+                {{ form_errors(form.authority) }}
+            </div>
+        </div>
+        
+        <div class="row">
+            <div class="col-12">
+                {{ form_widget(form.country) }}
+                {{ form_errors(form.country) }}
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                {{ form_widget(form.issued, {attr: {placeholder: 'users.form.document.issued.placeholder'}}) }}
+                {{ form_errors(form.issued) }}
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                {{ form_widget(form.expire, {attr: {placeholder: 'users.form.document.expire.placeholder'}}) }}
+                {{ form_errors(form.expire) }}
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                {{ form_widget(form.file, {attr: {placeholder: 'users.form.document.file.placeholder'}}) }}
+                {{ form_errors(form.file) }}
+            </div>
+        </div>
+        {% if form.vars.value.id is empty or permissions.accessLevel(['admin','operator']) is not empty %}
+            <button type="button" class="btn btn-delete btn-elevate">x</button>
+        {% endif %}
+    </li>
+{% endmacro %}
+
+{% macro bank_template(form) %}
+    <li>
+        <div class="row">
+            <div class="col-12">
+                {{ form_widget(form.bank, {attr: {placeholder: 'users.form.bank.bank.placeholder'}}) }}
+                {{ form_errors(form.bank) }}
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                {{ form_widget(form.iban, {attr: {placeholder: 'users.form.bank.iban.placeholder'}}) }}
+                {{ form_errors(form.iban) }}
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                {{ form_widget(form.bic, {attr: {placeholder: 'users.form.bank.bic.placeholder'}}) }}
+                {{ form_errors(form.bic) }}
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                {{ form_widget(form.swift, {attr: {placeholder: 'users.form.bank.swift.placeholder'}}) }}
+                {{ form_errors(form.swift) }}
+            </div>
+        </div>
+        <button type="button" class="btn btn-delete btn-elevate">x</button>
+    </li>
+{% endmacro %}
+
+{% macro course_template(form) %}
+    <li>
+        <div class="row">
+            <div class="col-3">
+                {{ form_widget(form.course) }}
+                {{ form_errors(form.course) }}
+            </div>
+            <div class="col-3">
+                {{ form_widget(form.subCourse) }}
+                {{ form_errors(form.subCourse) }}
+            </div>
+            <div class="col-3">
+                {{ form_widget(form.issue) }}
+                {{ form_errors(form.issue) }}
+            </div>
+            <div class="col-3">
+                {{ form_widget(form.revision) }}
+                {{ form_errors(form.revision) }}
+            </div>
+        </div>
+        <div class="row date-row">
+            <div class="col-6 course_start">
+                {{ form_widget(form.start) }}
+                {{ form_errors(form.start) }}
+            </div>
+            <div class="col-6 course_end">
+                {{ form_widget(form.end) }}
+                {{ form_errors(form.end) }}
+            </div>
+            <script type="text/javascript">
+            $(document).ready(function(){
+                courseAdd($('#{{form.start.vars.id}}'),$('#{{form.end.vars.id}}'));
+            });
+            </script>
+        </div>
+        <button type="button" class="btn btn-delete btn-elevate remove_profile_course">x</button>
+    </li>
+{% endmacro %}
+
+{% macro course_template_view(courses) %}
+
+    <div class="row">
+        <table class="table table-striped- table-bordered table-hover no-footer">
+            <thead>
+                <th>{{'user.form.course.course'|trans}}</th>
+                <th>{{'user.form.course.subCourse'|trans}}</th>
+                <th>{{'user.form.course.issue'|trans}}</th>
+                <th>{{'user.form.course.revision'|trans}}</th>
+                <th>{{'user.form.course.start'|trans}}</th>
+                <th>{{'user.form.course.end'|trans}}</th>
+            </thead>
+            <tbody>
+                {% for i in courses %}
+                    <tr>
+                        <td>{{i.course.name}}</td>
+                        <td>{{i.subCourse.name}}</td>
+                        <td>{{i.issue.name}}</td>
+                        <td>{{i.revision?i.revision.name:'-'}}</td>
+                        <td>{{i.start|date(i18n.date_format_s)}}</td>
+                        <td>{{i.end?i.end|date(i18n.date_format_s):'-'}}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endmacro %}
+
+{% set show_prices = false %}
+{% if form.personSubTypePerson is defined and (permissions.isAdmin() or permissions.isOperator()) %}
+    {% for i in form.personSubTypePerson.vars.data %}
+        {% if i.bnomKey=='ROLE_INSTRUCTOR' %}
+            {% set show_prices = true %}
+        {% endif %}
+    {% endfor %}
+{% endif %}
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="k-portlet">
+            <div class="k-portlet__head">
+                <div class="k-portlet__head-label">
+                    <h3 class="k-portlet__head-label">{{title|default()|trans({'%username%':form.vars.data.fullName}) }}</h3>
+                </div>
+            </div>
+            {{ form_start(form,{attr: {novalidate:'novalidate', 'enable-unsaved-changes-alert':true}})}}
+                <ul class="nav nav-tabs nav-tabs-line nav-tabs-line-success" role="tablist">
+                    <li class="nav-item">
+                        <a class="nav-link active" data-toggle="tab" href="#tabs_basic" role="tab"><i class="la la-list"></i> {{ "user.form.tabs.basic"|trans }}</a>
+                    </li>
+                    {#% if form.vars.data.id is null or form.vars.data.personType.bnomkey=='person'%#}
+                    <li class="nav-item">
+                        <a class="nav-link" data-toggle="tab" href="#tabs_login" role="tab"><i class="la la-key"></i> {{ "user.form.tabs.login"|trans }}</a>
+                    </li>
+                    {#%endif%#}
+                    <li class="nav-item">
+                        <a class="nav-link" data-toggle="tab" href="#tabs_contacts" role="tab"><i class="la la-phone"></i> {{ "user.form.tabs.contacts"|trans }}</a>
+                    </li>
+                   
+                    <li class="nav-item">
+                        <a class="nav-link" data-toggle="tab" href="#tabs_bank" role="tab"><i class="la la-cc-visa"></i> {{ "user.form.tabs.bank"|trans }}</a>
+                    </li>
+                    
+                    
+
+                </ul>
+                {#BASIC INFO#}
+                <div class="tab-content">
+                    <div class="tab-pane active" id="tabs_basic" role="tabpanel">
+
+                            {{ form_row(form.personType) }}
+                        {% if form.vars.data.id is not null %}
+                            {% set hidePerson = form.vars.data.personType.bnomkey=='company' %}
+                            {% set hideCompany = form.vars.data.personType.bnomkey=='person' %}
+                        {% else %}
+
+
+                            <hr />
+                            {% set hidePerson = false %}
+                            {% set hideCompany = false %}
+                        {% endif %}
+
+
+                        <div class="person">
+                            {# {% if permissions.isAdmin() %}
+                                {{ form_row(form.personSubTypePerson) }}
+                            {% endif %} #}
+                            {{ form_row(form.firstName) }}
+                            {{ form_row(form.middleName) }}
+                            {{ form_row(form.lastName) }}
+                        
+                        <hr />
+                            {{ form_row(form.nationality) }}
+                            {{ form_row(form.languages) }}
+                        </div>
+                        <hr />
+                        {{form_row(form.nickname)}}
+
+                        <hr />
+                        <div class="company">
+                            {# {{ form_row(form.personSubTypeCompany) }} #}
+                            {{ form_row(form.companyName) }}
+                            {{ form_row(form.companyType) }}
+                            
+
+                            {{ form_row(form.companyID) }}
+                            {{ form_row(form.companyVAT) }}
+                            {{ form_row(form.companyPerson) }}
+                            {{ form_row(form.credit) }}
+                            {{ form_row(form.delayed_payment) }}
+                        </div>
+                        
+                        {# скрава се след разговор с Лъчо до настване на нужда от това поле
+                            <hr/>
+                            {{ form_row(form.parentOrganisation) }}
+                        #}
+                        {% if permissions.isAdmin() and form.vars.data.id %}
+                            <hr/>
+                            {{ form_row(form.disabled) }}
+                        {% endif %}
+                    </div>
+                    {#LOGIN#}
+                    <div class="tab-pane" id="tabs_login" role="tabpanel">
+                        {% if form.vars.value.id is empty %}
+                            {{ form_widget(form.user) }}
+                            {{ form_errors(form.user) }}
+                        {% else %}
+                            {{ form_row(form.user) }}
+                        {% endif %}
+
+                        {{ form_row(form.images) }}
+
+                        {# legal person
+
+                        {% if hideCompany==false %}
+                            <div class="company">
+                                <hr />
+                                {{ form_row(form.job_title_company  ) }}
+                                {{ form_row(form.departament_company) }}
+                            </div>
+                        {% endif %}
+                        #}
+                    </div>
+                    {#CONTACTS#}
+                    <div class="tab-pane" id="tabs_contacts" role="tabpanel">
+                        <div class="tab-content">
+                            <div class="tab-pane active" id="tabs_contact" role="tabpanel">
+
+                                <div class="form-group row">
+                                    {{ form_label(form.phone, null, {'label_attr': {'class': 'col-form-label col-lg-3 col-sm-12'}}) }}
+                                    <div class="col-lg-9 col-md-9 col-sm-12">
+                                        <ul class="dynamic phone" data-index="{{form.phone.vars.data|length}}" data-prototype="{{ _this.phone_template(form.phone.vars.prototype)|e('html_attr') }}">
+                                            {% for i in form.phone %}
+                                                {{ _this.phone_template(i) }}
+                                            {% endfor %}
+                                            <li><button type="button" class="btn btn-secondary btn-elevate add">{{ "users.form.add_button_phone"|trans }}</button></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    {{ form_label(form.mail, null, {'label_attr': {'class': 'col-form-label col-lg-3 col-sm-12'}}) }}
+                                    <div class="col-lg-9 col-md-9 col-sm-12">
+                                        <ul class="dynamic mail" data-index="{{form.mail.vars.data|length}}" data-prototype="{{ _this.contacts_template(form.mail.vars.prototype)|e('html_attr') }}">
+                                            {% for i in form.mail %}
+                                                {{ _this.contacts_template(i) }}
+                                            {% endfor %}
+                                            <li><button type="button" class="btn btn-secondary btn-elevate add">{{ "users.form.add_button_mail"|trans }}</button></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    {{ form_label(form.url, null, {'label_attr': {'class': 'col-form-label col-lg-3 col-sm-12'}}) }}
+                                    <div class="col-lg-9 col-md-9 col-sm-12">
+                                        <ul class="dynamic url" data-index="{{form.url.vars.data|length}}" data-prototype="{{ _this.contacts_template(form.url.vars.prototype)|e('html_attr') }}">
+                                            {% for i in form.url %}
+                                                {{ _this.contacts_template(i) }}
+                                            {% endfor %}
+                                            <li><button type="button" class="btn btn-secondary btn-elevate add">{{ "users.form.add_button_url"|trans }}</button></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    {{ form_label(form.addresse, null, {'label_attr': {'class': 'col-form-label col-lg-3 col-sm-12'}}) }}
+                                    <div class="col-lg-9 col-md-9 col-sm-12">
+                                        <ul class="dynamic address" data-index="{{form.addresse.vars.data|length}}" data-prototype="{{ _this.address_template(form.addresse.vars.prototype)|e('html_attr') }}">
+                                            {% for i in form.addresse %}
+                                                {{ _this.address_template(i) }}
+                                            {% endfor %}
+                                            <li><button type="button" class="btn btn-secondary btn-elevate add">{{ "users.form.add_button_address"|trans }}</button></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            {% if hidePerson==false %}
+                                <div class="person">
+                                    <hr />
+                                    {#
+                                    {{ form_row(form.company) }}
+                                    #}
+                                    {{ form_row(form.parentOrganisation) }}
+                                    <hr />
+                                </div>
+                                <div class="form-group row person">
+                                    {{ form_label(form.soc, null, {'label_attr': {'class': 'col-form-label col-lg-3 col-sm-12'}}) }}
+                                    <div class="col-lg-9 col-md-9 col-sm-12">
+                                        <ul class="dynamic soc" data-index="{{form.soc.vars.data|length}}" data-prototype="{{ _this.contacts_template(form.soc.vars.prototype)|e('html_attr') }}">
+                                            {% for i in form.soc %}
+                                                {{ _this.contacts_template(i) }}
+                                            {% endfor %}
+                                            <li><button type="button" class="btn btn-secondary btn-elevate add">{{ "users.form.add_button_soc"|trans }}</button></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            {% endif %}
+                            {% if hideCompany==false %}
+                                <div class="form-group row company">
+                                    {{ form_label(form.call_sing, null, {'label_attr': {'class': 'col-form-label col-lg-3 col-sm-12'}}) }}
+                                    <div class="col-lg-9 col-md-9 col-sm-12">
+                                        <ul class="dynamic call_sing" data-index="{{form.call_sing.vars.data|length}}" data-prototype="{{ _this.contacts_template(form.call_sing.vars.prototype)|e('html_attr') }}">
+                                            {% for i in form.call_sing %}
+                                                {{ _this.contacts_template(i) }}
+                                            {% endfor %}
+                                            <li><button type="button" class="btn btn-secondary btn-elevate add">{{ "users.form.add_button_call_sing"|trans }}</button></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        </div>
+                      </div>
+                    </div>
+                    {#BANK DETAILS#}
+                    <div class="tab-pane" id="tabs_bank" role="tabpanel">
+                        <div class="form-group row">
+                            {{ form_label(form.bank, null, {'label_attr': {'class': 'col-form-label col-lg-3 col-sm-12'}}) }}
+                            <div class="col-lg-9 col-md-9 col-sm-12">
+                                <ul class="dynamic bank" data-index="{{form.bank.vars.data|length}}" data-prototype="{{ _this.bank_template(form.bank.vars.prototype)|e('html_attr') }}">
+                                    {% for i in form.bank %}
+                                        {{ _this.bank_template(i) }}
+                                    {% endfor %}
+                                    <li><button type="button" class="btn btn-secondary btn-elevate add">{{ "users.form.add_button_bank"|trans }}</button></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    
+
+
+                   
+                    
+                </div>
+
+
+                {{ form_row(form._token) }}
+                {{ form_row(form.save) }}
+            {{ form_end(form) }}
+        </div>
+    </div>
+</div>
+
+
+{% endblock content_body %}
+
+
+
+{% block stylesheets %}
+    {{ parent() }}
+    {% stylesheets '@BaseBundle/Resources/public/css/dynamic_forms.css' filter='css_url_rewrite,?uglifycss' %}<link rel="stylesheet" href="{{ asset_url }}?r={{ver}}" />{% endstylesheets %}
+    {#% stylesheets '@UsersBundle/Resources/public/css/form.css' filter='css_url_rewrite,?uglifycss' %}<link rel="stylesheet" href="{{ asset_url }}" />{% endstylesheets %#}
+{% endblock %}
+
+
+{% block header_javascripts %}
+    {{ parent() }}
+    {% javascripts '@BaseBundle/Resources/public/js/input-mask.js' filter='?uglifyjs2' %}<script src="{{ asset_url }}?r={{ver}}"></script>{% endjavascripts %}
+{% endblock %}
+{% block javascripts %}
+
+    {% javascripts '@BaseBundle/Resources/public/js/dynamic_forms.js' filter='?uglifyjs2' %}<script src="{{ asset_url }}?r={{ver}}"></script>{% endjavascripts %}
+    {% javascripts '@base_nom_load_child'%}
+             <script src="{{ asset_url }}?r={{ver}}" type="text/javascript"></script>
+     {% endjavascripts %}
+    <script>
+
+    $(document).ready(function() {
+        //$('#user_form_personType').change();
+    });
+var speed = 0;
+var nickname_label = $('[for="nickname"]').text();
+$('#user_form_personType').change(function() {
+    $('.company, .person').hide(speed).filter('.'+$('option:selected',this).data('key')).show(speed);
+    //$('#user_form_personSubTypePerson input, #user_form_personSubTypeCompany input').prop('checked',false);
+    //https://www.digiserver.net/jiga/browse/FMSKAB-236?focusedCommentId=10513&page=com.atlassian.jira.plugin.system.issuetabpanels%3Acomment-tabpanel#comment-10513
+
+    if($(this).find('option:selected').data('key') == 'company') {
+        $('[for="user_form_nickname"]').text("{{'users.form.trademark'|trans}}");
+    }else{
+        $('[for="user_form_nickname"]').text("{{'users.form.nickname'|trans}}");
+    }
+});
+//}).change();#https://www.digiserver.net/jiga/browse/FMSKAB-236?focusedCommentId=10409&page=com.atlassian.jira.plugin.system.issuetabpanels%3Acomment-tabpanel#comment-10409
+
+{% if form.vars.value.id is empty %}
+    $('#user_form_nickname').change(function() {
+        $('#user_form_user_username').val($(this).val());
+    });
+
+    $('#user_form_companyName').change(function() {
+        $('#user_form_user_username').val($(this).val());
+    });
+{% endif %}
+
+$('#user_form_user').change(function() {
+    $('.provider').parents('.form-group.row.validate')[this.value ? 'show' : 'hide'](speed);
+}).change();
+speed = 'fast';
+//disable add course
+/*
+$('.add_profile_course').on('click',function(){
+   that = this;
+   $('#tabs_course').find('.course_end input').each(function(el, val){
+    that.disabled = !this.value?true:false;
+   })
+
+})
+
+$(document).on('changeDate','.course_end input', function(evt) {
+    start = $(this).closest('.date-row').find('.course_start input').datepicker('getDate');
+    $('.add_profile_course').prop('disabled',(start<evt.date?false:true));
+});
+*/
+
+function courseAdd(start,end){
+    if (this==window) {
+        return new courseAdd(start, end);
+    } else {
+        this.start = start;
+        this.end = end;
+        this.addButton = $('.add_profile_course');
+        this.removeButton = $('.remove_profile_course');
+        this.init();
+
+    }
+}
+
+courseAdd.prototype = {
+    start:null,
+    end: null,
+    addButton: null,
+    removeButton: null,
+    init:function(){
+
+        that = this;
+        this.start.datepicker({
+           format: '{{i18n.date_format}}',
+        }).on('changeDate', function(evt) {
+            if (evt.date !== undefined) {
+                date = new Date(evt.date);
+                nextDay = date.setDate(date.getDate()+1);
+                that.end.datepicker('setStartDate',new Date(nextDay));
+            }
+            that.compareDate();
+        });
+
+        this.end.datepicker({
+           format: '{{i18n.date_format}}',
+        }).on('changeDate', function(evt) {
+
+            if (evt.date !== undefined) {
+                date = new Date(evt.date);
+                prevDay = date.setDate(date.getDate()-1);
+                that.start.datepicker('setEndDate',new Date(prevDay));
+            }
+            that.compareDate();
+        });
+
+        this.removeButton.on('click',function(){
+          setTimeout(function(){
+            that.checkDates();
+          },500);
+          //that.addButton.prop('disabled',false);
+
+        })
+        if(this.start.datepicker('getDate')){
+             date = new Date(this.start.datepicker('getDate'));
+             nextDay = date.setDate(date.getDate()+1);
+             that.end.datepicker('setStartDate',new Date(nextDay));
+        }
+
+        if(this.end.datepicker('getDate')){
+            date = new Date(this.end.datepicker('getDate'));
+            prevDay = date.setDate(date.getDate()-1);
+            that.start.datepicker('setEndDate',new Date(prevDay));
+        }
+        that.compareDate();
+
+    },
+    compareDate:function(){
+        that = this;
+        if((that.start.datepicker('getDate')&&that.end.datepicker('getDate'))&&that.start.datepicker('getDate')<that.end.datepicker('getDate')){
+            this.addButton.prop('disabled',false);
+        }else{
+            this.addButton.prop('disabled',true);
+        }
+    },
+    checkDates:function(){
+        that = this;
+        if($('.date-row').length>0){
+            $('.date-row').each(function(el, val){
+                that.start =$($(this).find('input')[0]);
+                that.end =$($(this).find('input')[1]);
+                if(that.start&&that.end){
+                    that.compareDate();
+                }
+            })
+        }else{
+            that.addButton.prop('disabled',false);
+        }
+    },
+}
+    </script>
+
+{% endblock %}

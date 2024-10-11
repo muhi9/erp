@@ -1,0 +1,63 @@
+{% extends "::base.html.twig" %}
+
+{% block title %}
+{%- if action == 'add' %}
+{{'manufacture.manufacture_add'|trans}}
+{%- endif %}
+{%- if action == 'edit' %}
+{{'manufacture.manufacture_edit'|trans}}
+{%- endif %}
+{% endblock %}
+
+
+{% block content_body %}
+<!-- begin:: Content Body -->
+ <a href="{{ path('manufacture_list', { 'page': 'manufacture_add'})}}" class="k-margin-r-5  btn btn-brand k-content__head-back-link"><i class="flaticon-reply"></i>{{'label.back'|trans }}</a>
+
+<div class="row">
+  <div class="col-md-12">
+    <div class="k-portlet">
+      <div class="k-portlet__head">
+        <div class="k-portlet__head-label">
+          <h3 class="k-portlet__head-label">
+{%- if action == 'add' %}
+  {{'manufacture.manufacture_add'|trans}}
+{%- endif %}
+{%- if action == 'edit' %}
+  {{'manufacture.manufacture_edit'|trans}}
+  <script>
+    var nomId = {{nomId}};
+  </script>
+{%- endif %}
+        </h3>
+        </div>
+      </div>
+{{ form_start(form) }}
+{{ form_widget(form) }}
+{{ form_end(form) }}
+    </div>
+  </div>
+</div>
+
+
+<!-- end:: Content Body -->
+
+{% endblock content_body %}
+
+
+{% block javascripts %}
+    {{ parent() }}
+<script>
+$(function() {
+  //$('.baseNomTypeParent').attr('disabled', 'disabled');
+  setTimeout(function() {
+    $($('.baseNomsParents').parent().find('select')[0]).attr('disabled','disabled');
+    //console.log($($('.baseNomsParents').parent().find('select')[0]));
+  }, 500);
+})
+</script>
+{% endblock %}
+{% block stylesheets %}
+    {{ parent() }}
+{% endblock %}
+

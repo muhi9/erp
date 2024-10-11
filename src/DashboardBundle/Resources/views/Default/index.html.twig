@@ -1,0 +1,51 @@
+{% extends 'base.html.twig' %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+    .dataTables_wrapper .row:last-of-type {
+    	display: none;
+    }
+    .dataTables_wrapper .dataTables_length {
+    	display: none;
+    }
+    </style>
+{% endblock %}
+
+
+{% block title %}{{'cases.list.info'|trans }}{% endblock %}
+
+{% block content_body %}
+
+<!-- begin:: Content Body -->
+<div class="k-content__body    k-grid__item k-grid__item--fluid" id="k_content_body">
+    <div class="k-portlet k-portlet--mobile">
+        <div class="k-portlet__head">
+            <div class="k-portlet__head-label">
+                <h3 class="k-portlet__head-title">{{title|default('Dashboard')|trans}}</h3> &nbsp;
+            </div>
+        </div>
+        <div class="row col-12">
+	        <div class="col-md-12 col-lg-6 col-md-6">
+	        	<br />
+	        	<h3 class="text-center">{{'cases.expired'|trans}}</h3>
+				
+			</div>
+		
+	        <div class="col-md-12 col-lg-6 col-md-6">
+	        	<br />
+	        	<h3 class="text-center">{{'cases.new'|trans}}</h3>
+				
+			</div>
+		</div>
+    </div>
+</div>
+{% endblock content_body %}
+
+{% block content_breadcrumb %}
+ 
+{% endblock content_breadcrumb %}
+
+{% block javascripts %}
+    {{ parent() }}
+{% endblock %}

@@ -1,0 +1,32 @@
+{% extends 'base.html.twig' %}
+
+{% block stylesheets %}
+    {{ parent() }}
+{% endblock %}
+
+
+{% block title %}{{'country.country'|trans }}{% endblock %}
+
+{% block content_body %}
+
+<div class="row">
+  <div class="col-md-12">
+    <div class="k-portlet">
+      <div class="k-portlet__head">
+        <div class="k-portlet__head-label">
+          <a href="{{ path('country_list', { 'page': 'country_add'})}}" class="k-margin-r-5  btn btn-brand k-content__head-back-link"><i class="flaticon-reply"></i>{{'label.back'|trans }}</a>
+          <h3 class="k-portlet__head-label">{{'country.country_add'|trans }}</h3>
+        </div>
+      </div>
+      {{ form_start(form,{attr: {novalidate:'novalidate'}})}}
+      {{ form_widget(form) }}
+      {{ form_end(form) }}
+    </div>
+  </div>
+</div>
+
+{% endblock content_body %}
+
+{% block javascripts %}
+    {{ parent() }}
+{% endblock %}

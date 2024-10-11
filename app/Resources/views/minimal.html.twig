@@ -1,0 +1,139 @@
+{% trans_default_domain 'messages' %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+        <script src="https://ajax.googleapis.com/ajax/libs/webfont/1.6.16/webfont.js"></script>
+        <script>
+            WebFont.load({
+                google: {"families":["Poppins:300,400,500,600,700"]},
+                active: function() {
+                    sessionStorage.fonts = true;
+                }
+            });
+        </script>
+        <script>
+            //var siteUrl = $(document).attr('baseURI');
+            var siteUrl = '{{baseurl}}';
+        </script>
+        <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}" />
+        <title>{% block title %}Welcome!{% endblock %}</title>
+        {% block stylesheets %}{% endblock %}
+{% javascripts filter='uglifyjs2'
+    '@BaseBundle/Resources/public/plugins/jquery/jquery.js'
+    '@BaseBundle/Resources/public/plugins/jquery/jquery-ui.autocomplete.min.js'
+    '@BaseBundle/Resources/public/plugins/bootstrap/pooper.js'
+    '@BaseBundle/Resources/public/plugins/bootstrap/bootstrap.min.js'
+    '@BaseBundle/Resources/public/plugins/js-cookie.js'
+    '@BaseBundle/Resources/public/plugins/moment/moment.min.js'
+    '@BaseBundle/Resources/public/plugins/bootstrap/tooltip.min.js'
+    '@BaseBundle/Resources/public/plugins/perfect-scrollbar/perfect-scrollbar.js'
+    '@BaseBundle/Resources/public/plugins/sticky.min.js'
+    '@BaseBundle/Resources/public/plugins/wNumb.js'
+    '@BaseBundle/Resources/public/plugins/jquery/jquery.form.min.js'
+    '@BaseBundle/Resources/public/plugins/jquery/jquery.block.js'
+    '@BaseBundle/Resources/public/plugins/bootstrap/datepicker.min.js'
+    '@BaseBundle/Resources/public/plugins/bootstrap/timepicker.js'
+    '@BaseBundle/Resources/public/plugins/bootstrap/touchspin.js'
+
+    '@BaseBundle/Resources/public/plugins/jquery/maxlength.js'
+    '@BaseBundle/Resources/public/plugins/jquery/multiselectsplitter.js'
+    '@BaseBundle/Resources/public/plugins/bootstrap/bootstrap-select.js'
+    '@BaseBundle/Resources/public/plugins/handlebars.js'
+    '@BaseBundle/Resources/public/plugins/inputmask/jquery.inputmask.bundle.js'
+    '@BaseBundle/Resources/public/plugins/inputmask/inputmask.phone.extensions.js'
+    '@BaseBundle/Resources/public/plugins/nouislider.js'
+    '@BaseBundle/Resources/public/plugins/owl.carousel.js'
+    '%kernel.root_dir%/../web/assets/vendors/base/vendors.bundle.js'
+    output='js/theme_vendors.js'
+%}
+<script type="text/javascript" src="{{ asset_url }}?r={{ver}}"></script>
+{% endjavascripts %}
+
+{% javascripts filter='uglifyjs2' %}
+<script type="text/javascript" src="{{ asset_url }}?r={{ver}}"></script>
+{% endjavascripts %}
+{% javascripts '%kernel.root_dir%/Resources/public/js/main.js'
+    '@BaseBundle/Resources/public/js/toastr.min.js'
+    '@BaseBundle/Resources/public/js/sysmsg.js'
+    filter='?uglifyjs2'%}
+        <script src="{{ asset_url }}?r={{ver}}" type="text/javascript"></script>
+{% endjavascripts %}
+
+
+
+
+{% stylesheets filter='css_url_rewrite,?uglifycss'
+    '%kernel.root_dir%/../app/Resources/public/css/main.css'
+    '@BaseBundle/Resources/public/plugins/perfect-scrollbar/perfect-scrollbar.css'
+    '@BaseBundle/Resources/public/plugins/bootstrap/datepicker.css'
+    '@BaseBundle/Resources/public/plugins/bootstrap/datetimepicker.css'
+    '@BaseBundle/Resources/public/plugins/bootstrap/timepicker.css'
+    '@BaseBundle/Resources/public/plugins/bootstrap/touchspin.css'
+    '@BaseBundle/Resources/public/plugins/bootstrap/bootstrap-select.css'
+    '@BaseBundle/Resources/public/plugins/nouislider.css'
+    '@BaseBundle/Resources/public/plugins/owl.carousel.css'
+    '%kernel.root_dir%/../web/assets/vendors/base/vendors.bundle.css'
+    '%kernel.root_dir%/../web/assets/demo/default/base/style.bundle.css'
+    '%kernel.root_dir%/../web/assets/demo/default/skins/header/base/light.css'
+    '%kernel.root_dir%/../web/assets/demo/default/skins/brand/navy.css'
+    '%kernel.root_dir%/../web/assets/demo/default/skins/aside/navy.css'
+    '%kernel.root_dir%/../web/assets/vendors/custom/fullcalendar/fullcalendar.bundle.css'
+    '%kernel.root_dir%/../src/BaseBundle/Resources/public/css/main.css'
+    '%kernel.root_dir%/../src/BaseBundle/Resources/public/css/timepicker.css'
+    '%kernel.root_dir%/../src/BaseBundle/Resources/public/css/toastr.min.css'
+    output='css/dist/theme_minimal_dist.css' %}
+<link rel="stylesheet" href="{{ asset_url }}?r={{ver}}" />
+{% endstylesheets %}
+<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <base href="{{baseurl}}" />
+</head>
+
+    <body>
+        <!-- begin:: Page -->
+
+{% if(errors is defined and errors is not empty)%}
+  {% for e in errors%}
+  <div class="alert alert-warning" role="alert">
+              <div class="alert-icon"><i class="flaticon-warning"></i></div>
+                <div class="alert-text">{{e|trans}}</div>
+  </div>
+  {%endfor%}
+{% endif %}
+
+{% block content_body %}{% endblock content_body %}
+
+{% javascripts filter='uglifyjs2'
+    '%kernel.root_dir%/../web/assets/demo/default/custom/components/forms/widgets/input-mask.js'
+    output='js/base_theme_min.js'
+%}
+<script type="text/javascript" src="{{ asset_url }}?r={{ver}}"></script>
+{% endjavascripts %}
+
+{% javascripts filter='uglifyjs2'
+    '@BaseBundle/Resources/public/js/autocomplete.js'
+    '@BaseBundle/Resources/public/js/formValidation.js'
+    '@BaseBundle/Resources/public/js/timepicker.js'
+    '@BaseBundle/Resources/public/js/main.js'
+    output="js/basebundle_min.js"
+%}
+<script src="{{ asset_url }}?r={{ver}}" type="text/javascript"></script>
+{% endjavascripts %}
+
+{% block javascripts %}{% endblock %}
+
+{% for label, messages in app.flashes %}
+    {% for message in messages %}
+        <script>
+            $(function() {
+                sysMsg.show({'title':'{{label}} received','body':'{{message|raw}}', 'severity':'{{label}}'});
+            })
+        </script>
+    {% endfor %}
+{% endfor %}
+
+</body>
+</html>

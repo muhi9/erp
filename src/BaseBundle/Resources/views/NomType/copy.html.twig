@@ -1,0 +1,163 @@
+{% extends 'base.html.twig' %}
+{% block title %}{{'nomtype.nomtypes_copy'|trans}}{% endblock %}
+
+{% block content_body %}
+<!-- begin:: Content Body -->
+<div class="k-content__body    k-grid__item k-grid__item--fluid" id="k_content_body">
+    <div class="k-portlet k-portlet--mobile">
+        <div class="k-portlet__head">
+            <div class="k-portlet__head-label" id="bnom_head">
+                <h3 class="k-portlet__head-title">
+                    {{'nomtype.nomtypes_list_copy'|trans}}
+                </h3> &nbsp;
+            </div>
+            <div class="k-portlet__head-label">
+            <a href="{{path('nom_type_new')}}" class="btn btn-sm btn-elevate btn-brand">
+                <i class="flaticon2-add-1 k-padding-l-5 k-padding-r-0"></i>
+                <span class="k-font-bold">{{'label.addNew'|trans}}</span>&nbsp;
+            </a>
+            </div>
+        </div>
+        <div class="k-portlet__body main">
+            <div class="k-portlet">
+                <div class="row" data-sticky-container="">
+                <div class="col-lg-3 col-xl-3">
+                    <div class="k-portlet" data-sticky="false" data-margin-top="100" data-sticky-for="1023" data-sticky-class="k-sticky" style="">
+                        <div class="k-portlet__body" id="bnom_tree">
+                            <div id="jsnomtree_copy"> Loading tree...</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- end:: Content Body -->
+<style type="text/css">
+.dataTables_wrapper .dataTable tr.deleted td:last-child {
+    background: white;
+    text-decoration: none;
+}
+.dataTables_wrapper .dataTable tr.deleted {
+    background: lightgray;
+}
+.dataTables_wrapper .dataTable tr.deleted td {
+    color: gray;
+    text-decoration: line-through;
+}
+#grid_body {
+    position: sticky;
+    background: whitesmoke;
+    top: calc(100vh - 327px);
+}
+</style>
+<script>
+$(document).ready( function() {
+    function updateTableContainerPosition() {
+        var $tableContainer = $('#grid_body'),
+            containerHeight = parseInt($tableContainer.height());
+        if ($(window).height() > containerHeight) {
+            $tableContainer.css('top', $('#k_header').height());
+        } else {
+            $tableContainer.css('top', 'calc(100vh - ' + containerHeight + 'px)');
+        }
+    }
+
+    $(window).bind('scroll resize', updateTableContainerPosition);
+
+/*    $('.nomtree').fileTree({
+            root: '/',
+            script: '{{path('nom_tree')}}',
+            expandSpeed: 1000,
+            collapseSpeed: 1000,
+            multiFolder: false
+        }, function(file) {
+            alert(file);
+        });
+*/
+    var lastLoadedGrid=null;
+    
+    $('#jsnomtree_copy').jstree({
+         "core" : {
+            'themes': {
+                'url': true,
+                'dir': '{{path('nom_tree')}}/../..//bundles/OneBookBase/js/jstree/themes/',
+            },
+            // so that create works
+            "check_callback" : true,
+            "edit":true,
+            'data': [{
+                    "text": "Parent Node",
+                    "children": [{
+                        "text": "Initially selected",
+                        "state": {
+                            "selected": true
+                        }
+                    }, {
+                        "text": "Custom Icon",
+                        "icon": "flaticon2-warning text-danger"
+                    }, {
+                        "text": "Initially open",
+                        "icon" : "fa fa-folder text-success",
+                        "state": {
+                            "opened": true
+                        },
+                        "children": [
+                            {"text": "Another node", "icon" : "fa fa-file text-waring"}
+                        ]
+                    }, {
+                        "text": "Another Custom Icon",
+                        "icon": "flaticon2-bell-5 text-waring"
+                    }, {
+                        "text": "Disabled Node",
+                        "icon": "fa fa-check text-success",
+                        "state": {
+                            "disabled": true
+                        }
+                    }, {
+                        "text": "Sub Nodes",
+                        "icon": "fa fa-folder text-danger",
+                        "children": [
+                            {"text": "Item 1", "icon" : "fa fa-file text-waring"},
+                            {"text": "Item 2", "icon" : "fa fa-file text-success"},
+                            {"text": "Item 3", "icon" : "fa fa-file text-default"},
+                            {"text": "Item 4", "icon" : "fa fa-file text-danger"},
+                            {"text": "Item 5", "icon" : "fa fa-file text-info"}
+                        ]
+                    }]
+                },
+                "Another Node"
+            ]
+        },
+        "types" : {
+            "default" : {
+                "icon" : "fa fa-folder text-success"
+            },
+            "file" : {
+                "icon" : "fa fa-file  text-success"
+            }
+        },
+        "state" : { "key" : "demo2" },
+        "plugins" : [ "dnd", "state", "types" ]
+                
+    }).on('click', function(e){
+        $('#jsnomtree_copy').jstree('rename_node', e.target , text );
+    });
+    
+});
+</script>
+
+{% endblock content_body %}
+
+
+{% block javascripts %}
+    {{ parent() }}
+    {% javascripts filter='uglifyjs2'
+        '@BaseBundle/Resources/public/js/jstree/jstree.min.js'
+        output='js/nomtype_index.js'
+    %}
+        <script type="text/javascript" src="{{ asset_url }}?r={{ver}}"></script>
+    {% endjavascripts %}
+{% endblock %}

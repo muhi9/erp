@@ -1,0 +1,167 @@
+user.user_edit: Edit
+profile.list: Потребители
+profile.list.info: Profiles
+profile.profile_edit: Edit
+profile.edit: 'Профил > %username%'
+profile.view: Профил
+user.user: Акаунти
+users.form.label: "Редактиране на %username%"
+user.form.tabs.basic: Информация
+users.form.personType: Type
+user.form.tabs.login: Акаунт
+user.form.tabs.institution: Институции
+users.form.tel: Телефон
+users.form.email: Емайл
+
+users.form.institutionEmployee: Институция
+profile.form.institution: Регионален център
+profile.form.position: Длъжност
+
+
+users.form.user: Акаунт
+users.form.images: Images
+users.form.enabled: Активирай
+users.form.positions: ''
+
+user.form.tabs.documents: ID Documents
+users.form.nationality: Nationality
+users.form.sex: Пол
+users.form.firstName: Име
+users.form.middleName: Презиме
+users.form.lastName: Фамилия
+users.form.mobile1: Mobile 1
+users.form.zipPostCode: 'Postcode'
+users.form.municipality: Municipality
+users.form.dob: 'Дата на раждане'
+users.form.disabled: 'Деактивирай'
+users.form.company: 'Company'
+users.form.departament: Departament
+users.form.job_title: Job Title
+users.form.departament_person: Departament
+users.form.job_title_person: Job Title
+users.form.departament_company: Departament
+users.form.job_title_company: Job Title
+users.form.idCardNumber: 'ID card number'
+users.form.idCardAuthority: 'ID card authority'
+users.form.idCardIssue: 'ID card issue'
+users.form.idCardExpiry: 'ID card expiry'
+users.form.passportNumber: 'Passport number'
+users.form.passportAuthority: 'Passport authority'
+users.form.passportIssue: 'Passport issue'
+users.form.passportExpiry: 'Passport expiry'
+users.form.silent.from: 'silent from'
+users.form.silent.to: 'to'
+users.form.not.valid.value: 'value is not valid'
+users.form.altitude: Altitude
+users.form.centerOfGravity: Arm/CG
+users.form.distance: Distance
+users.form.flow: Fluid Flow
+users.form.volume: Volume
+users.form.geographicCoordinate: Latitude/Longitude
+users.form.length: Length
+users.form.pressure: Pressure
+users.form.temperature: Temperature
+users.form.time: Time
+users.form.velocity: Velocity
+users.form.verticalSpeed: Vertical Speed
+users.form.visibility: Visibility
+users.form.weight: Weight
+users.form.windSpeed: Wind Speed
+
+group.edit.submit: 'Update group'
+group.show.name: 'Group name'
+group.new.submit: 'Create group'
+group.flash.updated: 'The group has been updated.'
+group.flash.created: 'The group has been created.'
+group.flash.deleted: 'The group has been deleted.'
+security.login.username: Потребителско име
+security.login.password: Парола
+security.login.remember_me: 'Remember me'
+security.login.submit: 'Log in'
+profile.show.username: Потребителско име
+profile.show.email: Имейл
+profile.edit.submit: Update
+profile.flash.updated: 'The profile has been updated.'
+change_password.submit: 'Change password'
+change_password.flash.success: 'The password has been changed.'
+registration.check_email: "An email has been sent to %email%. It contains an activation link you must click to activate your account.\n"
+registration.confirmed: 'Congrats %username%, your account is now activated.'
+registration.back: 'Back to the originating page.'
+registration.submit: Register
+registration.flash.user_created: 'The user has been created successfully.'
+registration.email.subject: 'Welcome %username%!'
+registration.email.message: "Hello %username%!\n\nTo finish activating your account - please visit %confirmationUrl%\n\nThis link can only be used once to validate your account.\n\nRegards,\nthe Team.\n"
+resetting.check_email: "An email has been sent. It contains a link you must click to reset your password.\nNote: You can only request a new password once within %tokenLifetime% hours.\n\nIf you don't get an email check your spam folder or try again.\n"
+resetting.request.username: 'Username or email address'
+resetting.request.submit: 'Reset password'
+resetting.reset.submit: 'Change password'
+resetting.flash.success: 'The password has been reset successfully.'
+resetting.email.subject: 'Reset Password'
+resetting.email.message: "Hello %username%!\n\nTo reset your password - please visit %confirmationUrl%\n\nRegards,\nthe Team.\n"
+layout.logout: 'Log out'
+layout.login: 'Log in'
+layout.register: Register
+layout.logged_in_as: 'Logged in as %username%'
+form.group_name: 'Group name'
+form.username: Потребителско име
+form.email: Имейл
+form.current_password: 'Current password'
+form.password: Парола
+form.password_confirmation: 'Repeat password'
+form.new_password: 'New password'
+form.new_password_confirmation: 'Repeat new password'
+title.userInfo: "User Info"
+title.userinfo: "User Info"
+title.users: "Акаунти"
+label.userlist: "Акаунти"
+user.user_list: "Акаунти"
+persona.persona_info: "User info"
+users.form.message_provider: 'Message provider'
+users.form.add.silent: 'add silent hours'
+messages_provider.do_not_send_messages_during_some_hours: 'Do not send messages during some hours'
+profile.profile: 'Profiles'
+profile.profile_add: 'Добавяне на профил'
+profile.add: 'Добавяне на профил'
+users.form.save: запис
+users.form.error:
+  firstName_is_blank: 'Моля въведете име!'
+  lastName_is_blank: 'Моля въведете фамилия!'
+  nickname_is_blank: 'Nickname is not set!'
+  companyName_is_blank: 'Company name is not set!'
+  companyVAT_is_blank: 'Company VAT Number is not set!'
+  companyPerson_is_blank: 'Accountable Person is not set!'
+  dateOfEnrolment_is_blank: 'Date of Enrolment is not set!'
+  emergency:
+    emergency_contact_is_blank: 'Emergency Contact is not set!'
+    phone_is_blank: 'Emergency Phone is not set!'
+    mail_is_blank: 'Emergency Mail is not set!'
+  address:
+    personalInfo_is_blank: Personal info is not set!
+    contactType_is_blank: Contact Type is not set!
+    address1_is_blank: Address is not set!
+    address1Phonetic_is_blank: Address Phonetic is not set!
+    place_is_blank: Place is not set!
+    placePhonetic_is_blank: Place Phonetic is not set!
+    postcode_is_blank: Postcode is not set!
+    municipality_is_blank: Municipality is not set!
+    country_is_blank: Country is not set!
+user.form.error.plainPassword_is_blank: Моля въведете парола
+user.form.error.username_is_blank: Моля въведете потребителско име
+user.form.error.email_is_blank: Моля въведе имейл
+The entered passwords don't match.: Паролите не съвпадат!
+users.form.info: Профил
+users.form.edit: Редакцияна Акаунт
+users.form.roles: Роля
+users.form.roles.admin: Администратор
+users.form.roles.super_admin: Super Admin
+users.form.roles.operator: Оператор
+users.form.roles.client: Потребител
+
+user.form.institution.error.institution_is_blank: Моля изберете институция.
+
+
+user.form.tabs.availability: Availability
+user.form.tabs.system_settings: Settings
+user.form.tabs.prices: Prices
+user.form.tabs.invoices: Invoices
+user.form.tabs.limits: Limitations

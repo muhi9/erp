@@ -1,0 +1,82 @@
+{% if block_size is defined %}
+	{% if block_size == 1 %}
+		{% set block_class = 'col-lg-4 col-md-6 col-sm-12' %}
+	{% elseif block_size == 2 %}
+		{% set block_class = 'col-lg-6 col-md-6 col-sm-12' %}
+	{% elseif block_size == 3 %}
+		{% set block_class = 'col-lg-8 col-md-8 col-sm-12' %}
+	{% else %}
+		{% set block_class = 'col-lg-12 col-md-12 col-sm-12' %}
+	{% endif %}
+{% else %}
+	{% set block_size = 4 %}
+	{% set block_class = 'col-lg-12 col-md-12 col-sm-12' %}
+{% endif %}
+
+{% block stylesheets %}{% endblock %}
+
+<div class="dashboard-block {{block_class|raw}}">
+	<div class="k-portlet k-portlet--height-fluid">
+		<div class="k-portlet__head">
+			<div class="k-portlet__head-label">			
+				<h3 class="k-portlet__head-title">{% block title %}{% endblock %}</h3>
+			</div>
+			<div class="k-portlet__head-toolbar">
+				<div class="k-portlet__head-toolbar-wrapper">
+					<div class="dropdown dropdown-inline">
+						<button type="button" class="btn btn-clean btn-sm btn-icon btn-icon-md" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="flaticon-more-1"></i></button>
+						<div class="dropdown-menu dropdown-menu-right">
+							<ul class="k-nav">
+								<li class="k-nav__section k-nav__section--first">
+									<span class="k-nav__section-text">Export Tools</span>
+								</li>
+								<li class="k-nav__item">
+									<a href="#" class="k-nav__link">
+										<i class="k-nav__link-icon la la-move"></i>
+										<span class="k-nav__link-text">Print</span>
+									</a>
+								</li>
+								{% block block_menu_items %}{% endblock %}
+							</ul>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="k-portlet__body">
+			{% block content_body %}{% endblock %}
+		</div>
+		<div class="dashboard-edit-mask">
+			<div>
+				<span class="move"><i class="la la-arrows"></i></span>
+				{% if settings_form is defined %}
+					<span class="settings"><i class="la la-wrench"></i></span>
+				{% endif %}
+				<span class="remove"><i class="la la-remove"></i></span>
+			</div>
+		</div>
+		<input type="hidden" name="block" value="{{ app.request.attributes.get("_controller") }}" />
+		<input type="hidden" name="block_size" value="{{block_size}}" />
+		{% if settings_form is defined %}
+			<div class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
+				<div class="modal-dialog" role="document">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h5 class="modal-title">{{'Add block'|trans}}</h5>
+							<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+						</div>
+						<div class="modal-body">
+							{{ form_widget(settings_form) }}
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-secondary" data-dismiss="modal">{{'Cancel'|trans}}</button>
+							<button type="button" class="btn btn-primary" data-dismiss="modal">{{'Save'|trans}}</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		{% endif %}
+	</div>
+</div>
+
+{% block javascripts %}{% endblock %}

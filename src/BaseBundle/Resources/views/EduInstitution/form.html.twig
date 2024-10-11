@@ -1,0 +1,57 @@
+{% extends 'base.html.twig' %}
+
+{% block stylesheets %}
+    {{ parent() }}
+{% endblock %}
+
+
+{% block title %}{{title|trans}}{% endblock %}
+
+{% block content_body %}
+
+<div class="row">
+  <div class="col-md-12">
+    <div class="k-portlet">
+        <div class="k-portlet__head">
+            <div class="k-portlet__head-label">
+                <a href="{{ path('edu_institution', { 'page': 'edu_institution_add'})}}" class="k-margin-r-5  btn btn-brand k-content__head-back-link"><i class="flaticon-reply"></i>{{'label.back'|trans }}</a>
+                <h3 class="k-portlet__head-label">{{title|trans}}</h3>
+            </div>
+        </div>
+        {{ form_start(form,{attr: {novalidate:'novalidate'}})}}
+        {{ form_widget(form) }}
+        {{ form_end(form) }}
+    </div>
+  </div>
+</div>
+
+{% endblock content_body %}
+
+
+
+{% block javascripts %}
+    {{ parent() }}
+
+     <script>
+    $(document).ready(function(){
+      $('#BaseBundle_eduinstitution_region').on('change', function(){
+        region = $(this).val();
+        link = '{{ path("get_city", {"id":"__id__"})}}';
+        
+        link = link.replace("__id__",region);
+        sendQeury(link).done(function(result) {
+            if(result){
+                $('#BaseBundle_eduinstitution_place').find('option').remove();
+                $.each(result, function(key, data){
+                    $('#BaseBundle_eduinstitution_place').append(new Option(data.value, data.id));
+                })
+            }
+         })
+      })
+    {% if form.vars.value.id is null %}
+        $('#BaseBundle_eduinstitution_region').change();
+    {% endif %}
+    })
+    </script>
+
+{% endblock %}

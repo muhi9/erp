@@ -1,0 +1,29 @@
+{% extends 'base.html.twig' %}
+
+
+{% block title %}{{title|default()|trans({'%setting%':setting|default()}) }}{% endblock %}
+
+{%- block _values_widget -%} ... {% endblock %}
+
+{% block content_body %}
+
+<div class="row">
+	<div class="col-md-12">
+		<div class="k-portlet">
+			<div class="k-portlet__head">
+				<div class="k-portlet__head-label">
+					<h3 class="k-portlet__head-label">{{title|default()|trans({'%setting%':setting|default()}) }}</h3>
+				</div>
+			</div>
+
+			{{ form_start(form,{attr: {novalidate:'novalidate'}})}}
+				{{ form_row(form.name) }}
+
+				{{ form_widget(form) }}
+			{{ form_end(form) }}
+		</div>
+	</div>
+</div>
+
+
+{% endblock content_body %}

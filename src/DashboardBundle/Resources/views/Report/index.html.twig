@@ -1,0 +1,31 @@
+{% extends 'base.html.twig' %}
+
+{% block stylesheets %}
+    {{ parent() }}
+  
+{% endblock %}
+
+
+{% block title %}{{'Справки'|trans }}{% endblock %}
+
+{% block content_body %}
+<!-- begin:: Content Body -->
+<div class="k-content__body    k-grid__item k-grid__item--fluid" id="k_content_body">
+    <div class="k-portlet k-portlet--mobile">
+        <div class="k-portlet__head">
+            <div class="k-portlet__head-label">
+                <h3 class="k-portlet__head-title">{{title|default('Справки')|trans}}</h3> &nbsp;
+            </div>
+        </div>
+        
+    </div>
+</div>
+{% endblock content_body %}
+
+{% block content_breadcrumb %}
+ 
+{% endblock content_breadcrumb %}
+
+{% block javascripts %}
+    {{ parent() }}
+{% endblock %}

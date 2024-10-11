@@ -1,0 +1,20 @@
+dashboards: Начало
+menu:
+  dashboard: Начало
+  cases: Случаи
+  report: Справки
+  specialist: Специалисти
+  assistant: Помощници
+  mdsupport: Методическа подрепа
+  institution: Институции
+  qualification: Квалификации
+  settings: 'System Settings'
+  profile: Потребители
+  system: Администрация
+  edu_institution: Образователни Институции
+  nomenclatures_tree: Системни типове
+  users: Акаунти
+  nom_def: Дефиниции
+  csop: ЦСОП центрове
+
+

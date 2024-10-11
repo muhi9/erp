@@ -1,0 +1,47 @@
+{% extends "::base.html.twig" %}
+
+{% block title %}{{'basenom.basenom_add'|trans }}{% endblock %}
+
+
+{% block content_body %}
+<!-- begin:: Content Body -->
+
+<div class="row">
+  <div class="col-md-12">
+    <div class="k-portlet">
+      <div class="k-portlet__head">
+        <div class="k-portlet__head-label">
+          <a href="{{ path('basenom_list', { 'page': 'basenom_add'})}}" class="k-margin-r-5  btn btn-brand k-content__head-back-link"><i class="flaticon-reply"></i>{{'label.back'|trans }}</a>
+
+          <h3 class="k-portlet__head-label">{{'basenom.add_basenom'|trans }}</h3>
+        </div>
+      </div>
+
+{% include 'BaseBundle:BaseNom:add_form.html.twig' %}
+
+    </div>
+  </div>
+</div>
+
+<script type="text/javascript">
+$(function() {
+  document.addEventListener("formValidationEnd", function(e) {
+    //if (isObject(e) && 'detail' in e && 'returnData' in e.detail && 'redirect' in e.detail['returnData']) {
+    if ('detail' in e && 'returnData' in e.detail && isObject(e.detail.returnData) && 'redirect' in e.detail.returnData) {
+      top.location.href=e.detail['returnData']['redirect'];
+    }
+    //console.log('formvalidation finised OK',e, JSON.stringify(e.detail));
+  }, false);
+});
+</script>
+<!-- end:: Content Body -->
+
+{% endblock content_body %}
+
+
+{% block javascripts %}
+    {{ parent() }}
+{% endblock %}
+{% block stylesheets %}
+    {{ parent() }}
+{% endblock %}

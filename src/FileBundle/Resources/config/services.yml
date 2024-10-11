@@ -1,0 +1,11 @@
+services:
+  file.cload_listener:
+    class: FileBundle\Listener\FLoadListener
+    arguments:
+      - "@kernel"
+    tags:
+      - { name: doctrine.event_listener, event: postLoad }
+  files:
+    class: FileBundle\Service\Files
+    arguments: ["@doctrine.orm.entity_manager", "@security.token_storage", "@router", "%kernel.root_dir%/../web/", "%empty_avatar_url%"]
+    public: true

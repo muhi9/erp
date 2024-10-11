@@ -1,0 +1,35 @@
+{% extends 'base.html.twig' %}
+{% import 'base_datatable.html.twig' as datatable %}
+
+{% block stylesheets %}
+    {{ parent() }}
+{% endblock %}
+
+
+{% block title %} {{'system_settings.list'|trans }}{% endblock %}
+
+{% block content_body %}
+
+<!-- begin:: Content Body -->
+<div class="k-content__body    k-grid__item k-grid__item--fluid" id="k_content_body">
+    <div class="k-portlet k-portlet--mobile">
+        <div class="k-portlet__head">
+            <div class="k-portlet__head-label">
+                <h3 class="k-portlet__head-title">
+                     {{'system_settings.list'|trans }}
+                </h3> &nbsp;
+            </div>
+        </div>
+        <div class="k-portlet__body main">
+            {{ datatable.html_block(table) }}
+        </div>
+    </div>
+</div>
+<!-- end:: Content Body -->
+
+{% endblock content_body %}
+
+{% block javascripts %}
+    {{ parent() }}
+    {{ datatable.script_block(table) }}
+{% endblock %}

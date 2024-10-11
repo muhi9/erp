@@ -1,0 +1,27 @@
+{% extends 'layout_dashboard_block.html.twig' %}
+{% import 'base_datatable.html.twig' as datatable %}
+
+
+{% block title %}Expiry of Licenses{% endblock %}
+
+
+{% block content_body %}
+<div class="k-content__body k-grid__item k-grid__item--fluid" id="k_content_body">
+	<div class="k-portlet k-portlet--mobile">
+		<div class="k-portlet__body main">
+			{{ datatable.html_block(table) }}
+		</div>
+    </div>
+</div>
+{% endblock %}
+
+
+{% block javascripts %}
+	{{ parent() }}
+    {{ datatable.script_block(table) }}
+    <script>
+    $(function () {
+    	$('#id_licenses_dash').on('draw.dt', function(settings, json) { $('[data-toggle="popover"]').popover(); });
+    });
+    </script>
+{% endblock %}

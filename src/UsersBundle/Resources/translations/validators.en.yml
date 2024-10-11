@@ -1,0 +1,28 @@
+fos_user:
+    username:
+        already_used: 'Потребителско име е заето'
+        blank: 'Моля въведете потребителско име.'
+        short: 'The username is too short.'
+        long: 'The username is too long.'
+    email:
+        already_used: 'Имейлът е зает.'
+        blank: 'Моля въведете имейл.'
+        short: 'The email is too short.'
+        long: 'The email is too long.'
+        invalid: 'The email is not valid.'
+    password:
+        blank: 'Моля въведете парола.'
+        short: 'The password is too short.'
+        mismatch: 'Паролите не съвпадат.'
+    new_password:
+        blank: 'Please enter a new password.'
+        short: 'The new password is too short.'
+    current_password:
+        invalid: 'The entered password is invalid.'
+    group:
+        blank: 'Please enter a name.'
+        short: 'The name is too short.'
+        long: 'The name is too long.'
+fos_group:
+    name:
+        already_used: 'The name is already used.'

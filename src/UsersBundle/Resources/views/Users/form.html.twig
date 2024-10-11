@@ -1,0 +1,26 @@
+{% extends 'base.html.twig' %}
+
+
+{% block title %}{{title|default()|trans }}{% endblock %}
+
+
+{% block content_body %}
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="k-portlet">
+            <div class="k-portlet__head">
+                <div class="k-portlet__head-label">
+                    <h3 class="k-portlet__head-label">{{'users.form.label'|default()|trans(user is defined ?{'%username%':user.info.fullName}:'') }}</h3>
+                </div>
+            </div>
+
+            {{ form_start(form,{attr: {novalidate:'novalidate'}})}}
+                {{ form_widget(form) }}
+            {{ form_end(form) }}
+        </div>
+    </div>
+</div>
+
+
+{% endblock content_body %}

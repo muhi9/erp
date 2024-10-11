@@ -1,0 +1,4 @@
+services:
+#    work_place.example:
+#        class: WorkPlaceBundle\Example
+#        arguments: ["@service_id", "plain_value", "%parameter%"]

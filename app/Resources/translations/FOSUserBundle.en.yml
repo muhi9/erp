@@ -1,0 +1,127 @@
+layout.logout: изход
+layout.login: вход
+profile.show.username: 'Show username'
+profile.show.email: 'Show Email'
+profile.edit.submit: Submit
+resetting.reset.submit: Submit
+resetting.check_email: 'check email'
+resetting.email.subject: Subject
+resetting.email.message: Message
+resetting.request.username: Username
+resetting.request.submit: Submit
+security.login.username: username
+security.login.password: password
+security.login.remember_me: remember_me
+security.login.submit: Вход
+registration.check_email: 'check email %email%'
+registration.confirmed: 'registration is confirmed'
+registration.back: back
+registration.email.subject: Subject
+registration.email.message: Message
+registration.submit: Submit
+registration.email: Имейл
+
+security.login.title: 'Sign to Account'
+security.login.forgetpass: 'Forgot Password ?'
+security.login.login: Вход
+security.login.sing_up: 'Sign Up'
+security.login.donthave_account: 'Don''t have an account?'
+security.login.social: 'Or sign with social account'
+security.login.facebook: Facebook
+security.login.twitter: Twitter
+security.login.google: Google
+
+group:
+    edit:
+        submit: 'Обнови група'
+    show:
+        name: 'Име на групата'
+    new:
+        submit: 'Нова група'
+    flash:
+        updated: 'Групата беше обновена успешно.'
+        created: 'Групата беше създадена успешно.'
+        deleted: 'Групата беше изтрита успешно.'
+        
+security:
+    login:
+        username: 'Потребителско име'
+        password: 'Парола'
+        remember_me: 'Запомни ме'
+        submit: 'Вход'
+        
+profile:
+    show:
+        username: 'Потребителско име'
+        email: Имейл
+    edit:
+        submit: 'Промени'
+    flash:
+        updated: 'Профилът беше успешно променен.'
+        
+change_password:
+    submit: 'Промени паролата'
+    flash:
+        success: 'Паролата беше успешно променена.'
+        
+registration:
+    check_email: |
+        Изпратихме писмо до %email%. То съдържа линк за активиране, който трябва да отворите, за да се активира профилът Ви.
+    confirmed: 'Честито, %username%, акаунтът е успешно активиран.'
+    back: 'Обратно към предишната страница.'
+    submit: 'Регистрация'
+    flash:
+        user_created: 'Потребителят беше успешно създаден.'
+    email:
+        subject: 'Добре дошли, %username%!'
+        message: |
+            Здравейте, %username%!
+
+            За да активирате своя профил, моля отворете %confirmationUrl%
+            
+            Това е еднократен линк за валидиране на акаунта Ви. 
+
+            Поздрави,
+            от екипа.
+
+resetting:
+    check_email: |
+        Изпратихме писмо с линк за активация на посочения имейл адрес: %email%.
+        Забележка: Заявка за нова парола може да направите в рамките на %tokenLifetime% час(а).
+        
+        Ако не откривате писмото проверете в папка СПАМ или опитайте отново.
+    request:
+        username: 'Потребителско име или имейл'
+        submit: 'Промени паролата'
+    reset:
+        submit: 'Промени паролата'
+    flash:
+        success: 'Паролата беше успешно променена.'
+    email:
+        subject: 'Забравена парола'
+        message: |
+            Здравейте, %username%!
+
+            За да промените своята парола, моля отворете %confirmationUrl%
+
+            Поздрави,
+            от екипа.
+
+# Global strings
+layout:
+    logout: 'Изход'
+    login: 'Вход'
+    register: 'Регистрация'
+    logged_in_as: 'Влязъл като %username%'
+    
+form:
+    group_name: 'Име на група'
+    username: 'Потребителско име'
+    email: 'Имейл'
+    current_password: 'Текуща парола'
+    password: 'Парола'
+    password_confirmation: 'Парола (отново)'
+    new_password: 'Нова парола'
+    new_password_confirmation: 'Нова парола (отново)'
+    enabled: 'Активирай'
+users.form.enabled: Активирай

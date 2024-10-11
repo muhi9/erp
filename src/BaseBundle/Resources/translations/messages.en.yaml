@@ -1,0 +1,153 @@
+form.country.iso2l.notempty: 'ISO2L is not set!'
+form.country.iso3l.notempty: 'ISO3L is not set!'
+form.country.name.notempty: 'Name is not set!'
+
+title.language_list: 'Languages'
+title.language: 'Languages'
+language:
+  language_add: 'Add'
+  language_edit: 'Edit'
+  add.header: 'Language Add'
+  edit.header: 'Language Edit > %language%'
+  form:
+    name: 'Name'
+    nameLocal: 'Native name'
+    iSO2: ISO2
+    iSO3: ISO3
+    encoding: Encoding
+    status: Status
+    flag: Flag
+    weightMeansure: 'Weight units'
+    distanceMeansure: 'Distance units'
+    save: Save
+  language_list: 'Languages'
+  name.not_blank: 'Name is not set!'
+  name_local.not_blank: 'Native name is not set!'
+  iso2.not_blank: 'ISO2 is not set!'
+  iso3.not_blank: 'ISO3 is not set!'
+  weight_meansure.not_blank: 'Weight units is not set!'
+  distance_meansure.not_blank: 'Distance units is not set!'
+
+
+country:
+  country_list: 'Countries'
+  country_add: 'Add Countrie'
+  country_edit: 'Edit Countrie > %country% '
+  country_breadcrumb_edit: 'Edit Countrie'
+  country: 'Country'
+  form:
+    name: Name
+    capital: Capital
+    iso2l: Iso2l
+    iso3l: Iso3l
+    status: Status
+    nativeName: "Native name"
+    tz: Tz
+    phonecode: "Phone code"
+    save: Save
+
+Currency: Currency
+
+variant: Variant
+'Save & Continue': 'Save & Continue'
+
+basenom:
+  basenom_list: 'Nomenclatures'
+  numenclarure_list: 'Nomenclatures List'
+  basenom_add: 'Add Nomenclature'
+  basenom_edit: 'Edit Nomenclature'
+  type-desc: 'Type desc.'
+  basenom_edit: 'Base Nom edit'
+  edit_basenom: 'Edit Base Nom'
+  basenom_add: 'Base Nom add'
+  add_basenom: 'Add Base Nom'
+
+manufacture:
+  manufacture_list: 'Manufacturers'
+  manufactures_list: 'Manufacturers List'
+  manufacture_add: 'Add Manufacturer'
+  manufacture_edit: 'Edit Manufacturer'
+  form:
+    parent: "Manufacture Parent"
+    manufacture: Manufacturer
+    status: Status
+    model: Model
+
+nomtype:
+  nomtypes: 'Nomenclature types'
+  nomtypes_list: 'Nomenclature types list'
+  name: Name
+  nomtype_edit: 'Edit Nomenclature type'
+  nomtype_add: 'Add Nomenclature type'
+
+nom.nom_type_index: Nomenclatures
+nom.nom_type_new: 'Add'
+ap_frequencies:
+  frequency_type: 'Frequency type'
+  frequency: 'Frequency'
+  frequency_measure: 'Measure'
+
+input:
+  heading:
+    placeholder: 052
+  latitude:
+    placeholder: N89 59 59,99
+  longitude:
+    placeholder: E143 49 29.99
+  date:
+    placeholder: Select Date
+  datetime:
+    placeholder: Select date and time
+  units:
+    length:
+      placeholder: Length
+      meter: m
+    volumetric_flow:
+      placeholder: Volumetric flow
+      liters_per_minute: l/min
+      liters_per_hour: l/h
+    speed:
+      placeholder: Speed
+      kilometers_per_hour: km/h
+      meters_per_second: m/sec
+      miles_per_hour: mph
+      feet_per_second: ft/sec
+    temperature:
+      placeholder: Temperature
+      celsius: °C
+    volume:
+      placeholder: Volume
+      litre: l
+    weight:
+      placeholder: Weight
+      kilogram: kg
+      ton: ton
+      pound: lb
+      ston: ton (short)
+      lton: ton (long)
+
+
+
+system.system_settings_list: System Settings
+system.system_settings_edit: Edit
+system_settings:
+  list: System Settings
+  edit: 'Edit > %setting%'
+  edit_profile: 'Edit Proile Settings > %setting%'
+  form:
+    error:
+      values_syntax_error: JSON syntax error
+      no_values: JSON is empty
+
+
+edu_institution:
+  edit: Редакция на образователна институция
+  add: Добавяне на образователна институция
+  list: Образователни институции
+  form:
+    name: Наименование
+    region: Регион
+    place: Населено място
+    save: запази
+    error:
+      name_is_blank: Моля въведете наименование

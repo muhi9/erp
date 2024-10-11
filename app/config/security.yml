@@ -1,0 +1,50 @@
+# To get started with security, check out the documentation:
+# https://symfony.com/doc/current/security.html
+security:
+    encoders:
+        FOS\UserBundle\Model\UserInterface: bcrypt
+    # https://symfony.com/doc/current/security.html#b-configuring-how-users-are-loaded
+    role_hierarchy:
+       ROLE_ADMIN:       [ROLE_ADMIN, ROLE_SUPER_ADMIN]
+       ROLE_SUPER_ADMIN: ROLE_ADMIN
+       ROLE_USER: ROLE_USER
+    providers:
+        #in_memory:
+        #    memory: ~
+        fos_userbundle:
+            id: fos_user.user_provider.username
+            #id: fos_user.user_provider.username_email
+
+    firewalls:
+        # disables authentication for assets and the profiler, adapt it according to your needs
+        dev:
+            pattern: ^/(_(profiler|wdt)|css|images|js)/
+            security: false
+
+        main:
+            pattern: ^/
+            access_denied_handler: BaseBundle\Security\AccessDeniedHandler
+            form_login:
+                provider: fos_userbundle
+                use_referer: true
+                #default_target_path: aircraft_aircraft_add
+                #always_use_default_target_path: true
+            logout:
+                path: /logout
+                target: /login
+            anonymous: true
+            logout_on_user_change: true
+            # activate different ways to authenticate
+
+            # https://symfony.com/doc/current/security.html#a-configuring-how-your-users-will-authenticate
+            #http_basic: ~
+
+            # https://symfony.com/doc/current/security/form_login_setup.html
+            #form_login: ~
+    access_control:
+        - { path: ^/login$, role: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/register, role: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/resetting, role: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/aircraft/api/logs/, role: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/adm/, role: [ROLE_ADMIN, ROLE_SUPER_ADMIN] }
+        - { path: ^/, role: [ROLE_USER, ROLE_OPERATOR, ROLE_INSTRUCTOR, ROLE_STUDENT,ROLE_CLIENT, ROLE_ADMIN, ROLE_SUPER_ADMIN]}

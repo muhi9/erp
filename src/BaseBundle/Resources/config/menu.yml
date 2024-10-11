@@ -1,0 +1,27 @@
+parameters:
+  menuView: menuTop
+  menu:
+    DashboardBundle:
+      label: menu.dashboard
+      path: homepage
+    Nada:
+      label: menu.system
+      class: mlala
+      rights: admin
+      sub:
+        Profile:
+          label: menu.profile
+          path: profile
+        Users:
+          label: menu.users
+          path: user
+          class: menu_row
+          rights: admin/su
+        nom_def:
+          label: menu.nom_def
+          path: nom_type_index
+          rights: admin/su
+        nomenclatures:
+          label: menu.nomenclatures_tree
+          path: basenom_list
+    

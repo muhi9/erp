@@ -1,0 +1,1326 @@
+{# app/Resources/views/form/fields.html.twig #}
+
+{%- block widget_attributes -%}
+    {% set attr = attr|merge({'class': 'form-control' ~ (attr.class is defined ? ' ' ~ attr.class : '') ~ (errors|length > 0 ? ' error' : '')} ) %}
+    id="{{ id }}" name="{{ full_name }}"
+    {%- if disabled %} disabled="disabled"{% endif -%}
+    {%- if required %} required="required"{% endif -%}
+    {{ block('attributes') }}
+{%- endblock widget_attributes -%}
+
+
+
+{% block autocomplete_widget %}
+    {%set selecteId = ""%}
+    {%set selecteName = ""%}
+
+    {% if form.vars.value is not empty %}
+        {%set selecteId = form.vars.data.id %}
+        {%set selecteName = form.vars.data.name %}
+    {% endif %}
+
+    {% javascripts
+        '@BaseBundle/Resources/public/js/autocomplete.js'
+        filter='?uglifyjs2'
+        output='widget/autocomplete.js'
+    %}
+    <script src="{{ asset_url }}?r={{ver}}" type="text/javascript"></script>
+    {% endjavascripts %}
+    <input id="{{form.vars.id}}"  class="autocompletes form-control" list="{{ form.vars.id }}_list"  data-type="{{form.vars.attr.type.id}}" autocomplete="off" value="{{selecteName}}">
+    <input name="{{form.vars.full_name}}" id="{{form.vars.id}}_hidden" type="hidden" list="{{ form.vars.id }}_list"  value="{{selecteId}}" />
+    <script type="text/javascript">autocomplete("{{form.vars.id}}");</script>
+
+{% endblock %}
+
+{% block tree_choice_widget %}
+{# copy of  block choice_widget_collapsed in vendor/symfony/symfony/src/Symfony/Bridge/Twig/Resources/views/Form/form_div_layout.html.twig #}
+    {%- if required and placeholder is none and not placeholder_in_choices and not multiple and (attr.size is not defined or attr.size <= 1) -%}
+        {% set required = false %}
+    {%- endif -%}
+    <select {{ block('widget_attributes') }}{% if multiple %} multiple="multiple"{% endif %}>
+        {%- if placeholder is not none -%}
+            <option value=""{% if required and value is empty %} selected="selected"{% endif %}>{{ placeholder != '' ? (translation_domain is same as(false) ? placeholder : placeholder|trans({}, translation_domain)) }}</option>
+        {%- endif -%}
+        {%- if preferred_choices|length > 0 -%}
+            {% set options = preferred_choices %}
+            {{- block('choice_widget_options') -}}
+            {%- if choices|length > 0 and separator is not none -%}
+                <option disabled="disabled">{{ separator }}</option>
+            {%- endif -%}
+        {%- endif -%}
+        {%- set options = choices -%}
+        {{- block('choice_widget_options') -}}
+    </select>
+
+{#{dump(form.vars)}#}
+
+{% javascripts filter='uglifyjs2' "@BaseBundle/Resources/public/js/treechoice.js"%}
+        <script src="{{ asset_url }}?r={{ver}}" type="text/javascript"></script>
+{% endjavascripts %}
+
+
+<script type="text/javascript">
+  var treeSettings = {};
+  var BaseNomLoad = {};
+  {% if form.vars.treeSettings is defined %}
+    {% for key, val in form.vars.treeSettings %}
+      {% if val in [true,false,null] %}
+        treeSettings['{{key}}'] = {{val}};
+      {% else %}
+        treeSettings['{{key}}'] = '{{val}}';
+      {% endif %}
+    {% endfor %}
+  {% endif %}
+
+  {% if form.vars.preloadParents is defined %}
+    {% for key,val in form.vars.preloadParents %}
+      BaseNomLoad['{{key}}'] = {{val|json_encode()|raw}};
+    {% endfor %}
+  {% endif %}
+$(function() {
+  var formName='{{form.parent.vars.name}}';
+  {# this ensures that if we don't have children in tree we don't build tree #}
+  {% if form.vars.preloadParents is defined and form.vars.preloadParents|length > 0 %}
+    {% if  form.parent.vars.data.id == null %}
+        initLoadTypes($('#{{form.vars.id}}'));
+    {% endif %}
+    //load nom types
+    $('form[name="{{form.parent.vars.name}}"] #{{form.vars.id}}').on('change', function(){
+      //console.log('onchane called',$(this))
+      initLoadTypes($(this));
+    });
+  {% endif %}
+  {% if form.vars.preloadParents is defined and form.vars.preloadParents|length == 0 %}
+    {# disable field shown #}
+    setTimeout(function() {
+        var el = $('#{{form.vars.id}}');
+        $('<input type=hidden name="'+el.attr('name')+'" value="'+el.val()+'">').insertAfter(el);
+        el.attr('disabled','disabled');
+
+    }, 500);
+  {% endif %}
+});
+
+</script>
+{% endblock tree_choice_widget %}
+
+{% block base_nom_widget %}
+
+<!-- bnom_widget -->
+    {%set selecteId = ""%}
+    {%set selecteName = ""%}
+    {%set automin = "automin=2" %}
+    {% if form.vars.settings.automin is defined %}
+       {%set automin = "automin="~form.vars.settings.automin %}
+    {%endif%}
+
+    {% set child=""%}
+    {% set parent=""%}
+    {% if form.vars.value is not empty %}
+        {%set selecteId = form.vars.data.id|default('') %}
+        {%set selecteName = form.vars.data.name|default('') %}
+    {% endif %}
+
+    {% if form.vars.hasChild is not empty and form.parent.children[form.vars.hasChild] is defined  %}
+        {% set child= 'hasChild=' ~attribute(form.parent.children, form.vars.hasChild).vars.id%}
+    {% endif %}
+    {% if form.vars.hasParent is not empty and form.parent.children[form.vars.hasParent] is defined  %}
+        {% set parent= 'hasParent=' ~attribute(form.parent.children, form.vars.hasParent).vars.id%}
+    {% endif %}
+{#
+    {% if form.vars.hasParent is not empty %}
+        {% set parent ='hasParent='~form.vars.hasParent%}
+    {% endif %}
+#}
+    {% if form.vars.addNew is not empty %}
+    {% set attr = attr|merge({'addNew':form.vars.addNew|trans()}) %}
+    {% endif %}
+
+    {% if form.vars.checkboxlist is not empty %}
+        {% for key,choice in form.vars.choices %}
+            <input type="checkbox" class="form-controll" id="{{form.vars.id}}_{{key}}"  name="{{form.vars.full_name}}[]" value="{{choice.id|default()}}"/>{{choice.name|default()}}
+        {% endfor %}
+    {% else %}
+
+     {% if form.vars.settings.sa|default(0) == 0 %}
+             <select {{block('widget_attributes')}} {{child}} {{parent}}  >
+                {% if form.vars.addEmpty is not empty %}
+                    {% if attr.placeholder is defined %}
+                        <option {{placeholder_is_selectable}} selected value="0">{{attr.placeholder|trans()}}</option>
+                        {% else %}
+                        <option value>{{placeholder_select_text|trans}}</option>
+                    {% endif %}
+                {% endif %}
+                {% if form.vars.addNew is not empty %}
+                    <option value="new">--{{form.vars.addNew|trans()}}--</option>
+                {% endif %}
+
+                {% if selecteId is empty and  parent is not empty %}
+                {% else %}
+
+                {% for choice in form.vars.choices %}
+
+                    {% set selected=""%}
+                    {% set chld=""%}
+                    {% if selecteId==choice.id %}
+                        {% set selected="selected"%}
+                    {%endif%}
+
+                    {% if choice.extra.child is defined %}
+
+                    {%endif%}
+                    {% if choice.extra is defined and choice.extra is not empty %}
+                        {% for extra in choice.extra %}
+                            {% if extra.baseKey =='child' %}
+                                {% set chld='child='~extra.baseValue %}
+                            {%endif%}
+                        {% endfor %}
+                    {%endif%}
+                    <option data-key="{{choice.bnomkey}}" {{chld}} {{selected}} value="{{choice.id}}">
+                       {{choice.name}}
+                    </option>
+                {% endfor %}
+                {% endif %}
+
+            </select>
+        {% else %}
+
+            <input id="{{form.vars.id}}"  class="autocompletes form-control" list="{{ form.vars.id }}_list"   {{automin}} data-type="{{form.vars.attr.type.id}}" autocomplete="off" value="{{selecteName}}">
+            <input name="{{form.vars.full_name}}" id="{{form.vars.id}}_hidden" type="hidden" list="{{ form.vars.id }}_list"  value="{{selecteId}}" />
+            <script type="text/javascript">autocomplete("{{form.vars.id}}");</script>
+
+        {%endif%}
+    {%endif%}
+
+<script>
+//basenomloadchild
+(function(){
+    var base = siteUrl,
+        field_id = '#{{form.vars.id}}',
+        formId = false,//document).find('form').attr('name'),
+        isType = false;
+        {% if form.parent.vars.id is not empty%}
+            formId = $('#{{form.parent.vars.id}}');
+        {% endif %}
+
+    $(document).on('change', field_id+'.hasChild', function(){
+      loadChildren($(this));
+    })
+
+    $(document).on('change', field_id+'.addNewNom', function(){
+      var val = $(this).val();
+      if(val=='new'){
+        addBaseNom($(this),$('label[for="'+$(this).attr('id')+'"]').text());
+      }
+    });
+
+    $(field_id+'.hasChild').each(function(i,e){
+
+        
+        
+         var child = $('#'+$(e).attr('hasChild'));
+
+        if($(e).val()>0){
+
+            if(child.val()==0){
+                child.empty();
+                val = $(e).val();
+                var data = {};
+                data['criteries']={'parent':val,'extraFields':'extra'};
+                //console.log('child type', child, child.attr('type'))
+                if (child.attr('type') != '')
+                  data['criteries']['type'] = child.attr('type');
+
+                $.ajax({method:'post', url:urls.basenom_load_child, data:{'data':data},datatype:'json',
+                  success: function(result) {
+                      if('data' in result) {
+                        child.append($("<option></option>").attr("value", 0).text('--Select--'));
+                        $.each(result['data'], function(key,value) {
+                          child.append($("<option></option>").attr('data-key',value['bnomkey']).attr("value", value['id']).attr('type',value['type']).text(value['value']));
+                        });
+                      }
+                  }
+                })
+            }
+        }else{
+           $(child).prop("disabled", true);
+
+        }
+
+    })
+
+    $('.sah').on('change',function(){
+        child  = $(this).attr('sah');
+        if($(this).prop('checked')){
+            $('#'+child).addClass('d-block').removeClass('d-none');
+        }else{
+            $('#'+child).addClass('d-none').removeClass('d-block').val('');
+        }
+    })
+
+
+    $('.treeParent').on('change',function(){
+        child  = $(this).data('target');
+        parentLi = $(this).closest('li');
+        if($(this).prop('checked')){
+          $('input[type=checkbox]',parentLi).prop('checked',true);
+        }else{
+          $('input[type=checkbox]',parentLi).prop('checked',false);
+        }
+    })
+
+    $('.showChild').on('click',function(){
+        parentLi = $(this).closest('li');
+        $('ul',parentLi).toggleClass("d-block");
+
+    })
+
+
+})();
+</script>
+
+{% endblock %}
+
+{% block courses_tree_widget %}
+    {%set checked = ""%}
+    {%set class = "d-none"%}
+
+   <ul id="{{form.vars.id}}">
+        {% for key,courses in form.vars.choices%}
+                {%set class = "d-none"%}
+                {% if  key in form.vars.value %}
+                    {%set checked = "checked"%}
+                    {%set class = ""%}
+                {% endif %}
+          <li id="parent_{{key}}" >
+            <label id="{{key}}"><input type="checkbox" class="treeParent" {{checked}} data-target="#childs_{{key}}" />{{courses.name}}</label> <a href="javascript:void(0);" class="showChild">{{'label.show.hide'|trans }}</a>
+             {%set checked = ""%}
+
+            {% if courses.practice is defined and courses.practice is not empty %}
+
+                <ul class="{{class}}"  id="childs_{{key}}">
+                {% for pkey,practice in courses.practice%}
+                    {%set class = "d-none"%}
+                    {% if  pkey in form.vars.value %}
+                        {%set checked = "checked"%}
+                        {%set class = ""%}
+                    {% endif %}
+                    <li>
+                        <label id="{{pkey}}"><input type="checkbox" {{checked}} class="treeParent" data-target="#childs_{{pkey}}"
+                         />{{practice.name}}</label>
+                        {%set checked = ""%}
+                        {% if practice.phase is defined and practice.phase is not empty %}
+                        <ul  class="{{class}}" id="childs_{{pkey}}">
+
+                        {% for phkey,phase in practice.phase%}
+                            {%set class = "d-none"%}
+                            {% if  phkey in form.vars.value %}
+                                {%set checked = "checked"%}
+                                {%set class = ""%}
+                            {% endif %}
+                            <li >
+                                <label id="{{phkey}}"><input type="checkbox" {{checked}} class="treeParent" data-target="#childs_{{phkey}}"  /> {{phase.name}}</label>
+                                {%set checked = ""%}
+                                {% if phase.exercise is defined and phase.exercise is not empty %}
+                                <ul id="childs_{{phkey}}" class="{{class}}">
+                                {% for ekey,exercise in phase.exercise%}
+                                {%set class = "d-none"%}
+                                {% if  ekey in form.vars.value %}
+                                    {%set checked = "checked"%}
+                                    {%set class = ""%}
+                                {% endif %}
+                                <li>
+                                    <label id="{{ekey}}"><input type="checkbox" {{checked}} name="{{form.vars.full_name}}[]" value="{{ekey}}" />{{exercise.name}}</label>
+                                    {%set checked = ""%}
+                                </li>
+                                {% endfor %}
+                                </ul>
+                                {% endif %}
+                            </li>
+                        {% endfor %}
+                        </ul>
+                        {% endif %}
+                    </li>
+                {% endfor %}
+                </ul>
+            {% endif %}
+
+          </li>
+        {% endfor %}
+</ul>
+ {% javascripts '@courses_tree_type'%}
+        <script src="{{ asset_url }}?r={{ver}}" type="text/javascript"></script>
+{% endjavascripts %}
+
+{% endblock %}
+
+{% block base_nom_measurement_widget %}
+<!--bnom_measurement_widget-->
+    {%set val = ""%}
+    {%set selecteId = ""%}
+
+    {% if form.vars.data is not empty %}
+        {%set val = form.vars.data %}
+    {% endif %}
+
+    {% if form.vars.choicesData is not empty %}
+        {%set selecteId = form.vars.choicesData.id %}
+    {% endif %}
+
+    {%- set attr = attr|merge({
+        'placeholder': (attr.placeholder is defined?attr.placeholder:""),
+        'class': "form-control col-lg-8 col-md-8 col-sm-12  mr-2 float-left "~attr.class,
+        'title': form.vars.name
+    })
+    -%}
+
+
+
+        <input type="number" {{ block('widget_attributes') }} value="{{val}}" />
+        <select  name="{{formName}}[{{measurementId}}]" id="{{formName}}_{{measurementId}}" class="form-control  col-lg-3 col-md-3 col-sm-12"   >
+                {% if form.vars.addEmpty is not empty %}
+                    <option value="0">--Select--</option>
+                {% endif %}
+
+                {% for choice in form.vars.choices %}
+
+                    {% set selected=""%}
+
+                    {% if selecteId==choice.id %}
+                        {% set selected="selected"%}
+                    {%endif%}
+
+                    <option  {{selected}} value="{{choice.id}}">
+                       {{choice.name}}
+                    </option>
+                {% endfor %}
+            </select>
+
+{% endblock %}
+
+{% block frequencies_widget %}
+    {% set frequencyType={}%}
+    {% set frequencyMeasurements={}%}
+    {% set formN = form.vars.formName%}
+    {% set fRow = 0%}
+
+    {% for key,data in form.vars.data %}
+        <div class="form-group row frequencies" data-row="{{key}}">
+            <div class="col-lg-3 col-md-3 col-sm-12 float-left mr-2 "><label class="d-none col-form-label freq-label">{{'ap_frequencies.frequency_type'|trans }}</label>
+                <select  name="{{formName}}[{{key}}][typeId]" data-child="ap.frequencyleve1"  id="{{formName}}" class="form-control frequencyType"   >
+                    {% if form.vars.addEmpty is not empty %}
+                        <option value="0">{{'select'|trans}}</option>
+                    {% endif %}
+                    {% for type in form.vars.frequencyType %}
+                        {% if key == 0 %}
+                            {% set frequencyType = frequencyType|merge({(type.id):{'name':type.name,'id':type.id}}) %}
+                        {% endif %}
+
+                        {% set selected=""%}
+                        {% if data.typeId==type.id %}
+                            {% set selected="selected"%}
+                        {%endif%}
+                        <option  {{selected}} value="{{type.id}}">
+                           {{type.name}}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-lg-3 col-md-3 col-sm-12 float-left mr-2"><label  class="d-none col-form-label freq-label">{{'ap_frequencies.frequency'|trans }}</label>
+                <input type="text" name="{{formName}}[{{key}}][freq]"  class="form-control  frequency mask-regex" placeholder = '123.33' value="{{data.freq}}" regex="[0-9]{1,3}\.[0-9]{1,10}" />
+            </div>
+            <div class="col-lg-3 col-md-3 col-sm-12 float-left mr-2"><label  class="d-none col-form-label freq-label">{{'ap_frequencies.frequency_measure'|trans }}</label>
+                <select  name="{{formName}}[{{key}}][freqType]"  class="form-control frequencyMeasurements "   >
+                    {% if form.vars.addEmpty is not empty %}
+                        <option value="0">{{'select'|trans}}</option>
+                    {% endif %}
+                    {% for measurement in form.vars.frequencyMeasurements %}
+                        {% if key == 0 %}
+                            {% set frequencyMeasurements = frequencyMeasurements|merge({(measurement.id):{'name':measurement.name,'id':measurement.id}}) %}
+                        {% endif %}
+
+                        {% set selected=""%}
+                        {% if data.freqType==measurement.id %}
+                            {% set selected="selected"%}
+                        {%endif%}
+                        <option  {{selected}} value="{{measurement.id}}">
+                           {{measurement.name}}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+            {% if key > 0 %}
+                <div class="removeFrequency"><i class="flaticon2-delete  d-block mt-3 ml-5"></i></div>
+            {% endif %}
+
+        </div>
+        {% set fRow = key%}
+
+    {% endfor %}
+        <div class="text-center">
+        <button type="button" class="addFrequency btn btn-secondary btn-elevate add">{{'airport.add_frequency_button'|trans}}</button>
+        </div>
+
+    <script type="text/javascript">
+        var frequencies = {{frequencyType|json_encode|raw}};
+        var measurement = {{frequencyMeasurements|json_encode|raw}};
+        var formName = {{formN}};
+        var d = new Date();
+        var id_sufix = d.getTime();
+        var frequenciesRow = {{fRow}};
+
+    </script>
+    <style type="text/css">
+    .freq-label {
+        text-align: center !important;
+        float: left;
+        width: 100%;
+    }
+    </style>
+     {% javascripts '@mask'%}
+        <script src="{{ asset_url }}?r={{ver}}" type="text/javascript"></script>
+    {% endjavascripts %}
+    <script  type="text/javascript">
+        inputMask('#'+'{{form.vars.id}}');
+    </script>
+    {% javascripts '@BaseBundle/Resources/public/js/frequenciestype.js' filter='?uglifyjs2' output='widget/frequenciestype.js'%}
+        <script src="{{ asset_url }}?r={{ver}}" type="text/javascript"></script>
+    {% endjavascripts %}
+
+{% endblock %}
+
+
+{% block template_variables_widget %}
+    {% set fRow = 0%}
+    {% for key,data in form.vars.data %}
+        {% set required = ''%}
+
+        {% if data.required is not empty %}
+            {% set required = 'checked="checked"'%}
+        {% endif %}
+        <div class="form-group row" data-row="{{key}}">
+            <div class="col-lg-3 col-md-3 col-sm-12 float-left mr-2 template">
+                <select name="{{formName}}[var][{{key}}][variable]" class="form-control">
+                    {% for id,variable in template_variables %}
+                        {% set selected = ''%}
+                        {% if variable == data.variable %}
+                            {% set selected = 'selected="selected"'%}
+                        {% endif %}
+                        <option value="{{variable}}" {{selected}}>{{variable}}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-lg-3 col-md-3 col-sm-12 float-left mr-2">
+<span class="k-switch k-switch--icon">
+        <label>
+            <input type="checkbox" name="{{formName}}[var][{{key}}][required]" {{required}} class="form-control form-control k-checkbox k-checkbox" im-insert="true" aria-describedby="status-error" value="1" checked="checked">
+            <span></span>
+        </label>
+    </span>
+            </div>
+
+            {% if key > 0 %}
+                <div class="removeRow"><i class="flaticon2-delete  d-block mt-3 ml-5"></i></div>
+            {% endif %}
+
+        </div>
+        {% set fRow = key%}
+    {% endfor %}
+    {#
+    <a href="javascript:void(0)" class="addRow ml-5 btn btn-success col-lg-3 col-md-3 col-sm-12 float-right">{{'template.add_row_button'|trans}}</a>
+#}
+    <script type="text/javascript">
+        var formId = $(document).find('form').attr('name');
+        var rowCount = {{fRow}};
+        var template_variables = {{template_variables|json_encode|raw}};
+        $('.addRow').on('click',function(e){
+            row = parseInt(rowCount+1);
+            var tmp = '<div class="form-group row template" data-row="'+row+'"><div class="col-lg-3 col-md-3 col-sm-12 float-left mr-2 "><select name="'+formId+'[var]['+row+'][variable]" class="form-control">';
+                $.each(template_variables, function(id,variable){
+                    tmp +='<option value="'+variable+'">'+variable+'</option>';
+                })
+
+            tmp +='</select></div><div class="col-lg-3 col-md-3 col-sm-12 float-left mr-2 "><input type="checkbox" name="'+formId+'[var]['+row+'][required]"  class="form-control" value="1"  /></div>';
+
+            tmp +='<div class="removeRow"><i class="flaticon2-delete  d-block mt-3 ml-5"></i></div></div>';
+            e.preventDefault();
+            if($('.template').length>0){
+                last = $('.template').last();
+            }
+
+            $(tmp).insertBefore($('.addRow'));
+            rowCount += 1;
+        })
+        $(document).on('click','.removeRow',function(e){
+            e.preventDefault();
+            $(this).parent('.row').remove();
+        });
+
+    </script>
+    <style type="text/css">
+        .freq-label {
+            text-align: center !important;
+            float: left;
+            width: 100%;
+        }
+    </style>
+{% endblock %}
+
+{% block user_message_provider_widget %}
+    {% if msgs_type is not empty %}
+        {% set mask = ''%}
+        {% for key,type in msgs_type %}
+            {% set active = ''%}
+            {% set contact = ''%}
+            {% set silent = {0:{from: '', to: ''}} %}
+            {% set silent_count = 0 %}
+            {% set regex = ''%}
+            {% set class = ''%}
+            {% set disabled = 'disabled=disabled'%}
+            {% set silent_hours_class = 'd-none'%}
+
+            {% if type.extraArray is not empty %}
+                {% if type.extraArray['regex'] is defined and type.extraArray['regex'] != "0" %}
+                    {% set regex = 'regex= '~type.extraArray['regex']%}
+                    {% set class = class~' mask-regex'%}
+                    {% set mask = 1%}
+                {% endif %}
+
+            {% endif %}
+
+            {% if data[type.id] is defined %}
+
+                {% if data[type.id]['active'] is not empty and data[type.id]['contact'] is not empty%}
+                    {% set active = 'checked=checked'%}
+                    {% set silent_hours_class = 'd-block'%}
+                {% endif %}
+
+                {% if data[type.id]['contact'] is not empty%}
+                    {% set disabled = ''%}
+                {% endif %}
+
+
+                {% set contact = data[type.id]['contact']%}
+
+                {% if data[type.id]['silent'] is not empty%}
+                    {% set silent = data[type.id]['silent']%}
+                {% endif %}
+            {% endif %}
+
+            {% if type.name|lower =='email' and contact is empty %}
+                {% set contact = default_mail%}
+            {% endif %}
+
+            <div class="form-group row" data-row="{{key}}">
+                <label class="col-form-label float-left col-lg-1 col-md-1 col-sm-12">{{type.name}}</label>
+
+                <div class="col-lg-3 col-md-3 col-sm-12 float-left mr-2">
+                    <input type="text" {{regex}} id="msg_provider_{{type.name|lower}}" name="{{formName}}[msgs_provider][{{type.id}}][contact]"   class="form-control {{class}} contact provider {{type.name|lower}}" value="{{contact}}"   />
+                {% if form_error[type.id]['contact'] is defined and form_error[type.id]['contact'] is not empty %}
+                    <div class="error invalid-feedback">
+                        <ul><li>{{form_error[type.id]['contact']|trans}}</li></ul>
+                    </div>
+                {% endif %}
+                {% if regex is not empty %}
+                  {% javascripts '@mask'%}
+                      <script src="{{ asset_url }}?r={{ver}}" type="text/javascript"></script>
+                  {% endjavascripts %}
+                  <script  type="text/javascript">
+                    inputMask('#'+'msg_provider_{{type.name|lower}}');
+                  </script>
+                  {% endif %}
+                </div>
+
+                <div class="k-checkbox-list">
+                    <label data-toggle="tooltip" data-placement="top" title="{{'messages_provider.do_not_send_messages_during_some_hours'|trans}}" class=" k-checkbox"><input type="checkbox" {{disabled}}  {{active}} class="providerActivate" name="{{formName}}[msgs_provider][{{type.id}}][active]"   value="1" /><span></span></label>
+                </div>
+
+                <div class="col-lg-7 col-md-7 col-sm-12 float-left mr-2 silent_hours {{silent_hours_class}}">
+                    {% for k,times in silent %}
+                        <div class="mt-2 float-left">
+                            <label class="col-form-label float-left">{{'users.form.silent.from'|trans }}</label>
+                            <input name="{{formName}}[msgs_provider][{{type.id}}][silent][{{k}}][from]" type="text" class="silent form-control col-lg-4 col-md-4 col-sm-12 float-left mx-3 " value="{{times.from}}"  />
+                            <label class="col-form-label float-left">{{ 'users.form.silent.to'|trans }}</label>
+                            <input name="{{formName}}[msgs_provider][{{type.id}}][silent][{{k}}][to]"  type="text" class="silent form-control col-lg-4 col-md-4 col-sm-12 float-left mx-3" value="{{times.to}}" />
+                            {% set silent_count = k %}
+                            {% if k > 0 %}
+                                <div class="removeRow"><i class="flaticon2-delete  d-block mt-3 ml-5"></i></div>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                    <a href="javascript:void(0)" data-type ="{{type.id}}" data-count="{{silent_count}}" class="addRowSilent mt-2 ml-5 btn btn-success col-lg-3 col-md-3 col-sm-12 float-right">{{'users.form.add.silent'|trans}}</a>
+                </div>
+
+            </div>
+        {% endfor %}
+
+    {% else %}
+        {{'basenom.not_found.masgs_type'|trans}}
+    {% endif %}
+
+    <script type="text/javascript">
+
+    $(document).ready(function() {
+
+
+       $('.silent').timepick({
+           'timeFormat': '{{i18n.timepick_format}}',
+           'step': 15,
+        });
+       $('.providerActivate').on('change',function(){
+            if (this.checked) {
+                $(this).closest('.form-group').find('.silent_hours').removeClass('d-none').addClass('d-block');
+            } else {
+                $(this).closest('.form-group').find('.silent_hours').addClass('d-none').removeClass('d-block');
+            }
+       });
+
+        $('.silent').on('change',function(){
+            time = $(this).val();
+            var arr = time.match(/^(?:[01][0-9]|2[0-3]):[0-5][0-9](?::[0-5][0-9])?$/);
+            if(arr===null){
+                $(this).addClass('is-invalid');
+                $(this).val('');
+            }else{
+                $(this).removeClass('is-invalid');
+            }
+        });
+
+        $('.addRowSilent').on('click',function(e){
+            silent_count = parseInt($(this).data('count')+1);
+            typeId = $(this).data('type');
+            var tmp = '<div class="mt-2 float-left"><label class="col-form-label float-left">{{"users.form.silent.from"|trans }}</label><input id="bookTime"  name="{{formName}}[msgs_provider]['+typeId+'][silent]['+silent_count+'][from]" type="text" class="silent form-control col-lg-4 col-md-4 col-sm-12 float-left mx-3"  /><label class="col-form-label float-left">{{"users.form.silent.to"|trans }}</label><input name="{{formName}}[msgs_provider]['+typeId+'][silent]['+silent_count+'][to]"  type="text" class="silent form-control col-lg-4 col-md-4 col-sm-12 float-left mx-3"  />';
+
+            tmp +='<div class="removeRow"><i class="flaticon2-delete  d-block mt-3 ml-5"></i></div></div>';
+            e.preventDefault();
+            $(tmp).insertBefore($(this));
+            $('.silent').timepick({
+                'timeFormat': '{{i18n.timepick_format}}',
+                'step': 15
+            });
+
+        })
+
+        $(document).on('click','.removeRow',function(e){
+            e.preventDefault();
+            $(this).parent('div').remove();
+        });
+
+        $('.contact').on('keyup',function(){
+            if($(this).val().length>0){
+                $(this).closest('.row').find('input[type="checkbox"]').prop('disabled',false);
+            }else{
+                $(this).closest('.row').find('input[type="checkbox"]').prop('checked',false);
+                $(this).closest('.row').find('input[type="checkbox"]').prop('disabled',true);
+            }
+        });
+   });
+
+    </script>
+
+{% endblock %}
+
+
+
+
+{% block multi_assoc_name_widget %}
+
+
+    {% for key,choice in form.vars.choices %}
+        <input type="text" name="{{choice.name}}[{{key}}]" id="{{id}}" class="form-control" value="{{choice.value}}" />
+    {% endfor %}
+{% endblock %}
+
+
+
+{% block base_nom_tree_label %}
+
+{% if nomTypeKey in form.vars and not form.vars.nomTypeKey is empty %}
+{% else %}
+{{form_label(form)}}
+{% endif %}
+{% endblock base_nom_tree_label %}
+
+
+
+{% block base_nom_tree_widget %}
+<!--bnom_tree_widget-->
+    {%set val = ""%}
+    {%set selecteId = ""%}
+    {% if form.vars.settings.nomtype is defined and form.vars.settings.nomtype is not empty %}
+        {%set selecteId = form.vars.settings.nomtype %}
+    {% endif %}
+
+{% if nomTypeKey in form.vars and not form.vars.nomTypeKey is empty %}
+        <select style="display:none;" class="baseNomsParents form-control" disabled="disabled" level="0" type="{{form.vars.parent.type.id}}" child="{{form.vars.child}}" childlevel="1" parent="null" id="{{form.parent.vars.id}}_{{form.vars.value.type.id|default('notset')|replace({'.':''})}}">
+            <option value="{{form.vars.parent.id}}">{{form.vars.parent.name}}</option>
+        </select>
+        <input type="hidden" name="{{form.parent.vars.id}}[{{form.vars.name}}]" id="{{form.vars.id}}" value="{{form.vars.parent.id}}"/>
+{% else %}
+
+    {% if form.vars.nomtypes is defined and form.vars.nomtypes is not empty %}
+        <select class="baseNomTypeParent form-control" id="{{form.vars.id}}">
+            {% if form.vars.addEmpty is not empty %}
+                <option value="">--Select--</option>
+            {%endif%}
+            {% for choice,id in form.vars.nomtypes %}
+                {% set selected=""%}
+                {% if selecteId==id %}
+                    {% set selected="selected"%}
+                {%endif%}
+
+                <option  {{selected}} value="{{id}}">
+                   {{choice}}
+                </option>
+            {% endfor %}
+        </select>
+    {% endif %}
+   {% if form.vars.parent is defined and form.vars.parent is not empty %}
+
+        <select class="baseNomsParents form-control" disabled="disabled" level="0" type="{{form.vars.parent.type.id}}" child="{{form.vars.child}}" childlevel="1" parent="null" id="{{form.parent.vars.id}}_{{form.vars.value.type.id|default('notset')|replace({'.':''})}}">
+            <option value="{{form.vars.parent.id}}">{{form.vars.parent.name}}</option>
+        </select>
+        <input type="hidden" name="{{form.parent.vars.id}}[{{form.vars.name}}]" id="{{form.vars.id}}" value="{{form.vars.parent.id}}"/>
+    {% endif %}
+{% endif %}
+
+
+    {% javascripts '@BaseBundle/Resources/public/js/basenomtreetype.js' filter='?uglifyjs2' output='widget/basenomtreetype.js'%}
+    <script src="{{ asset_url }}?r={{ver}}" type="text/javascript"></script>
+    {% endjavascripts %}
+
+    <script type="text/javascript">
+      var opts_{{form.vars.id}} = {
+        'element': $('#{{form.vars.id}}')
+      };
+      {% if form.vars.parents is not empty %}
+        opts_{{form.vars.id}}['parentsData'] = {{(form.vars.parents|json_encode|raw)}};
+        opts_{{form.vars.id}}['parentsData']['formId'] = '{{form.parent.vars.id}}';
+      {% endif %}
+      {% if form.vars.BaseNomLoad is defined %}
+        opts_{{form.vars.id}}['BaseNomLoad'] = {};
+        {% for key,val in form.vars.BaseNomLoad %}
+          opts_{{form.vars.id}}['BaseNomLoad']['{{key}}'] = {{val|json_encode()|raw}};
+        {% endfor %}
+      {% endif %}
+        opts_{{form.vars.id}}['params'] = {{(form.vars.settings|json_encode|raw)}};
+        opts_{{form.vars.id}}['params']['targetElId'] = '{{form.vars.id}}';
+        opts_{{form.vars.id}}['params']['targetElName'] = '{{form.vars.full_name}}';
+        opts_{{form.vars.id}}['formId'] = '{{form.parent.vars.id}}';
+        opts_{{form.vars.id}}['formName'] = '{{form.parent.vars.name}}';
+      {% if form.vars.settings.dataType == 'nomTypeKey' %}
+          opts_{{form.vars.id}}['params']['childId'] = parseInt({{form.vars.childId}});
+          opts_{{form.vars.id}}['params']['child'] = '{{form.vars.child}}';
+      {% endif %}
+        //opts_{{form.vars.id}}['nomtypeParams']['full_name'] = '{{form.vars.full_name}}';
+      $(function() {
+        var bnomtt_{{form.vars.id}} = new BaseNomTreeType(opts_{{form.vars.id}});
+        bnomtt_{{form.vars.id}}.init();
+      })
+    </script>
+<!--bnom_tree_widget-->
+{% endblock base_nom_tree_widget %}
+
+
+
+{% block base_nom_tags_widget %}
+<input name="{{form.vars.full_name}}" class="tagify--outside" value='{{form.vars.value}}' placeholder="{{form.vars.placeholder}}">
+<tags class="tagify tagify--outside" tabindex="-1" aria-expanded="false"></tags>
+{#{dump(dataOpts)}#}
+    {% javascripts '@BaseBundle/Resources/public/js/tagify.min.js' filter='?uglifyjs2'%}
+    <script src="{{ asset_url }}?r={{ver}}" type="text/javascript"></script>
+    {% endjavascripts %}
+
+{% block stylesheets %}
+    {% stylesheets '@BaseBundle/Resources/public/css/tagify.css' filter='css_url_rewrite,?uglifycss' %}<link rel="stylesheet" href="{{ asset_url }}?r={{ver}}" />
+{% endstylesheets %}
+{% endblock stylesheets %}
+
+    <script type="text/javascript">
+    var tagify;
+    $(function() {
+      var input = document.querySelector('input[name="{{form.vars.full_name}}"]')
+      // init Tagify script on the above inputs
+      tagify = new Tagify(input, {
+        enforceWhitelist : true,
+        whitelist: {{dataTags|json_encode|raw}},
+        //duplicates: true,
+        backspace: false,
+        dropdown: {
+          position: "input",
+          enabled : 0, // always opens dropdown when input gets focus
+          //maxItems: Infinity,
+          maxItems: {{form.vars.maxItems}},
+          //searchKeys: ["title"]
+        }
+      })
+    })
+    </script>
+<!--bnom_tree_widget-->
+{% endblock base_nom_tags_widget %}
+
+
+
+
+{% block manufacturer_widget %}
+
+    {%set val = ""%}
+    {%set selecteId = ""%}
+
+
+    {% if form.vars.settings.nomtype is defined and form.vars.settings.nomtype is not empty %}
+        {%set selecteId = form.vars.settings.nomtype %}
+    {% endif %}
+
+    {% if form.vars.nomtypes is defined and form.vars.nomtypes is not empty %}
+        <select class="baseNomTypeParent form-control">
+            {% if form.vars.addEmpty is not empty %}
+                <option value="">--Select--</option>
+            {%endif%}
+            {% for choice,id in form.vars.nomtypes %}
+                {% set selected=""%}
+                {% if selecteId==id %}
+                    {% set selected="selected"%}
+                {%endif%}
+
+                <option  {{selected}} value="{{id}}">
+                   {{choice}}
+                </option>
+            {% endfor %}
+        </select>
+    {% endif %}
+
+   {% if form.vars.parent is defined and form.vars.parent is not empty %}
+        <select class="baseNomsParents form-control" disabled="disabled" level="0" type="{{form.vars.parent.type.id}}" child="{{form.vars.child}}" childlevel="1" parent="null">
+            <option value="{{form.vars.parent.id}}">{{form.vars.parent.name}}</option>
+        </select>
+    {% endif %}
+
+    {% if form.vars.parents is not empty %}
+        <script type="text/javascript">
+            var baseNomData = '{{(form.vars.parents|json_encode|raw)}}';
+        </script>
+    {% endif %}
+
+    <script type="text/javascript">
+        var nomtypeParams = '{{(form.vars.settings|json_encode|raw)}}';
+    </script>
+    {% javascripts '@BaseBundle/Resources/public/js/manufacturer.js' filter='?uglifyjs2' output='widget/manufacturer.js'%}
+    <script src="{{ asset_url }}?r={{ver}}" type="text/javascript"></script>
+    {% endjavascripts %}
+{% endblock %}
+
+
+{%- block checkbox_widget -%}
+{# WTF. why was this here????    <input type="hidden" name="{{ full_name }}" value="" /> #}
+    <input type="checkbox" {{ block('widget_attributes') }}{% if value is defined %} value="{{ value }}"{% endif %}{% if checked %} checked="checked"{% endif %} />
+{%- endblock checkbox_widget -%}
+
+
+{#============================================================================================================ UNITS #}
+{#============================================================================================================ UNITS #}
+{#============================================================================================================ UNITS #}
+{%- block units_widget -%}
+    {% if not form.vars.hide_input and not form.vars.hide_units %}
+        <div class="row">
+            <div class="col-8">
+                {{ form_widget(attribute(form.parent, form.vars.value_field_name)) }}
+                {{ form_errors(attribute(form.parent, form.vars.value_field_name)) }}
+            </div>
+            <div class="col-4">
+                {{ form_widget(attribute(form.parent, form.vars.units_field_name)) }}
+                {{ form_errors(attribute(form.parent, form.vars.units_field_name)) }}
+            </div>
+        </div>
+    {% elseif form.vars.hide_units %}
+        {{ form_widget(attribute(form.parent, form.vars.value_field_name)) }}
+        {{ form_errors(attribute(form.parent, form.vars.value_field_name)) }}
+        {{ form_widget(attribute(form.parent, form.vars.units_field_name)) }}
+    {% else %}
+        {{ form_widget(attribute(form.parent, form.vars.units_field_name)) }}
+        {{ form_errors(attribute(form.parent, form.vars.units_field_name)) }}
+    {% endif %}
+
+    {% if not form.vars.hide_input and attribute(form.parent, form.vars.value_field_name).vars.attr.class is defined and 'mask' in attribute(form.parent, form.vars.value_field_name).vars.attr.class%}
+        {% javascripts '@mask'%}
+            <script src="{{ asset_url }}?r={{ver}}" type="text/javascript"></script>
+        {% endjavascripts %}
+        <script type="text/javascript">inputMask('#'+'{{attribute(form.parent, form.vars.value_field_name).vars.id}}');</script>
+    {% endif %}
+{% endblock %}
+
+
+{#============================================================================================================ AUTOCOMPLETE #}
+{#============================================================================================================ AUTOCOMPLETE #}
+{#============================================================================================================ AUTOCOMPLETE #}
+{% block ac_widget %}
+<div class="typeahead{% if form.vars.url_image %} with_images{% endif %}" {{block('attributes')|raw}}>
+    {% javascripts '@BaseBundle/Resources/public/js/ac.js'
+        filter='?uglifyjs2'
+        output='widget/ac.js'
+    %}
+    <script src="{{ asset_url }}?r={{ver}}" type="text/javascript"></script>
+    {% endjavascripts %}
+
+    {% if form.vars.data is null or form.vars.data.id is not defined  %}
+        {% set val = "" %}
+        {% set id = "" %}
+    {% else %}
+        {% set val = attribute(form.vars.data, form.vars.choice_label) %}
+        {% set id = form.vars.data.id %}
+    {% endif %}
+
+    {% if is_granted('ROLE_ADMIN') and form.vars.link_admin is not empty %}
+        {%set found_path = ' data-path="' ~ path(form.vars.link_admin, {id:'00000'}) ~ '"' %}
+    {% elseif form.vars.link is not empty%}
+        {%set found_path = ' data-path="' ~ path(form.vars.link, {id:'00000'}) ~ '"' %}
+    {% else %}
+        {% set found_path = '' %}
+    {% endif %}
+    {% if form.vars.url_image %}
+        {% set img_url = ' data-url-image=' ~ path(form.vars.url_image, {'id':'__QUERY__'}) ~ '' %}
+        {% set img_pre = '<img src=' ~ path(form.vars.url_image, {'id':form.vars.data ? form.vars.data.id : 0}) ~ ' alt="">'%}
+    {% else %}
+        {% set img_url = '' %}
+        {% set img_pre = ''%}
+    {% endif %}
+    {{img_pre|raw}}
+
+    <input id="{{form.vars.id}}_label" value="{{ val }}" class="form-control{%if form.vars.deleted%} deleted-item{%endif%}"{%if form.vars.disabled%} disabled="disabled"{%endif%} {%if form.vars.attr.hideClear is defined%} hideClear="true"{%endif%} placeholder="{{attr.placeholder|default('')}}" data-url="{{path(form.vars.url, {'query':'__QUERY__'})}}"{{img_url}}{% if form.vars.url_reload is defined and  form.vars.url_reload is not empty%} data-url-reload="{{path(form.vars.url_reload, {'query':'__ID__'})}}"{% endif %}{% if form.vars.allow_create %} data-url-create="{{path(form.vars.url_create, {'query':'__QUERY__'})}}"{% endif %} data-filters="{{form.vars.filterPredefined|json_encode()|e('html_attr')}}" data-clear-text-on-blur="{{form.vars.clear_text_on_blur}}" data-fields="{{form.vars.filterFields|json_encode()|e('html_attr')}}"{{found_path|raw}} />
+    <input type="hidden" name="{{form.vars.full_name}}" id="{{form.vars.id}}" value="{{ id }}" class="form-control" />
+</div>
+<script>var {{form.vars.id}}_autocomplete = typeahead('#{{form.vars.id}}_label')</script>
+{% endblock ac_widget %}
+
+{#============================================================================================================ AIRPORT (ac) => RUNWAY #}
+{#============================================================================================================ AIRPORT (ac) => RUNWAY #}
+{#============================================================================================================ AIRPORT (ac) => RUNWAY #}
+{% block airport_runway_input_widget %}
+    {% set attr = attr|merge({'class': 'form-control' ~ (attr.class is defined ? ' ' ~ attr.class : '')} ) %}
+    {% set selectedRunway =  form.vars.data.id is defined and form.vars.data.id is not empty?form.vars.data.id:0%}
+    <select {{ block('widget_attributes') }}>
+        <option value="">{{'select'|trans}}</option>
+
+        {% for runway in form.vars.choices %}
+            {% if runway.id == selectedRunway %}
+                <option value="{{ runway.id }}" selected>{{ runway.designator }}</option>
+            {% else %}
+                <option value="{{ runway.id }}">{{ runway.designator }}</option>
+            {% endif %}
+        {% endfor %}
+    </select>
+    <script>{{attribute(form.parent.children, form.vars.airport_field).vars.id}}_autocomplete.bindRunwayField('#{{form.vars.id}}')</script>
+{% endblock %}
+
+{#===================Captcha===================================#}
+{% block captcha_widget %}
+    <div>
+        {{question}}
+    </div>
+
+    <div>
+        <input type="text" class="form-control form-control " name="captcha[answer]" />
+
+        {% if error_messages is not empty%}
+            <div id="url-error" class="error invalid-feedback">
+                <ul><li>{{error_messages|trans}}</li></ul>
+            </div>
+        {% endif %}
+    </div>
+
+{% endblock %}
+
+{# FILES ============================================================================================================  #}
+
+
+{% macro files_grouped(form) %}
+{% set hidden = false %}
+{% set showEl = "" %}
+<li>
+    <div class="accordion accordion-outline" id="accordionFile">
+    {% for groupName,fileIds in form[0].vars.grouped %}
+        {% if hidden==false %}
+            {% set showEl="show" %}
+        {% else %}
+            {% set showEl="" %}
+        {%endif%}
+        <div class="card">
+            <div class="card-header" id="heading{{fileIds|join('-')}}">
+                <div class="card-title{% if hidden %} collapsed{%endif%}" data-toggle="collapse" data-target="#collapse{{fileIds|join('-')}}" aria-expanded="{% if hidden %}false{%else%}true{%endif%}" aria-controls="collapse{{fileIds|join('-')}}">
+                {{groupName}}
+                </div>
+            </div>
+            <div id="collapse{{fileIds|join('-')}}" class="card-body-wrapper collapse {{showEl}}" aria-labelledby="heading{{fileIds|join('-')}}" data-parent="#accordionFile">
+                <div class="card-body">
+                    <ul style="list-style:none;">
+                {% for file in form %}
+                    {% if file.vars.value.id in fileIds %}
+                        {{ form_widget(file) }}
+                    {% endif %}
+                {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+        {% if hidden!=true and (form[0].vars.expandAllGroups is defined and form[0].vars.expandAllGroups != true) %}
+            {% set hidden=true %}
+        {% endif %}
+    {% endfor %}
+    </div>
+</li>
+{% endmacro files_grouped %}
+
+{% macro files_grid(form) %}
+    <table class="table table-striped m-table dataTable no-footer dtr-inline no-search" id="{{form.vars.id}}_grid" role="grid">
+        <thead class="thead-green"><tr>
+            {% for col,name in form[0].vars.gridList.columns %}
+                <th data-field="{{col}}">{{name}}</th>
+            {% endfor %}
+            <th>*</th>
+        </tr></thead>
+        <tbody></tbody>
+        <tfoot></tfoot>
+    </table>
+
+    {% set gridVar = "files_grid_"~form.vars.id %}
+    <script>
+        var {{gridVar}} = [];
+        {% if form.parent.parent.vars.data is defined and form.parent.parent.vars.data.id is defined %}
+          {% set seid = form.parent.parent.vars.data.id %}
+        {% elseif form.parent.vars.data.id is defined %}
+          {% set seid = form.parent.vars.data.id %}
+        {% else %}
+          {% set seid = -1 %}
+        {% endif %}
+        {% for file in form.vars.data %}
+
+            {{gridVar}}.push({
+                "id" : "{{file.id}}",
+                "name": "{{file.name}}",
+                "customName": "{{file.customName}}",
+                {% if file.bnomType1.name is defined %}
+                "bnomType1": "{{file.bnomType1.name}}",
+                {% endif %}
+                {% if file.bnomType2.name is defined %}
+                "bnomType2": "{{file.bnomType2.name}}",
+                {% endif %}
+                {% if file.bnomType3.name is defined %}
+                "bnomType3": "{{file.bnomType3.name}}",
+                {% endif %}
+                {% if file.bnomType4.name is defined %}
+                "bnomType4": "{{file.bnomType4.name}}",
+                {% endif %}
+                "issuedOn": "{{file.issuedOn}}",
+                "validFrom": "{{file.validFrom|date(i18n.date_format_s)}}",
+                "validTo": "{{file.validTo}}",
+                "actions": '<a href="{{path('file_bundle_get_file',{file: file.id})}}" title="Download {{file.name}}" target="_blank" style="font-size: 24px;"><i class="la la-arrow-circle-down"></i></a> <a href="javascript:void(0)" data-grid-delete-link="{{path('file_bundle_del_file', {file:file.id, 'eid':seid})}}" data-id="{{file.id}}" data-file-name="{{file.name}}" style="font-size: 24px;" title="Delete {{file.name}}"><i class="la la-times-circle-o"></i></a>',
+            });
+        {% endfor %}
+        var gridColumns = [];
+        {% for column,name in form[0].vars.gridList.columns %}
+            gridColumns.push({ "data": "{{column}}" });
+        {% endfor %}
+        gridColumns.push({"data":"actions"});
+    $(function() {
+
+        var {{form.vars.id}}_grid = $('#{{form.vars.id}}_grid').DataTable( {
+            data: {{gridVar}},
+            searching: false,
+            paging: false,
+            columns: gridColumns,
+            "initComplete": function(settings, json) {
+                $('a[data-grid-delete-link]').on('click', function() {
+                     var link = $(this).data('grid-delete-link');
+                     var id = $(this).data('id');
+                     var fileDisplay = $(this).parent().parent();
+                     var fileUpload = $(this).parent().parent().parent().find('div.file-upload-field');
+                     if (link.indexOf('delete/')>-1 && parseInt(id)>0 && fileDisplay && fileUpload) {
+                         //confirm delete
+                         if (confirm('Are you sure you want to delete '+$(this).data('file-name'))) {
+                            // var row = settings.oInstance.api().row( $(this).parents('tr') );
+                            // var rowNode = row.node();
+                            // row.remove();
+                            // settings.oInstance.fnDraw();
+                            var oSettings = settings;
+                            var foId = id;
+                            var row = oSettings.oInstance.api().row( $(this).parents('tr') );
+                            var rowNode = row.node();
+                            sendQeury(link)
+                            .done(function(result) {
+                              if('success' in result && 'deleted' in result) {
+                                if (result['deleted'] == id) {
+                                  // deleted ok. delete file-display div and show upload div
+                                  row.remove();
+                                  oSettings.oInstance.fnDraw();
+                                  $('div[data-file-container='+foId+'_el]').remove()
+                                }
+                              }
+                            });
+                        }
+                     }
+                 })
+            }
+        } );
+    })
+    </script>
+    {% for file in form %}
+        {{ form_widget(file) }}
+        <script>
+            $('div[data-file-container={{file.vars.data.id}}_el]').parent().hide();
+        </script>
+    {% endfor %}
+{% endmacro files_grid %}
+
+
+{%- block collection_widget -%}
+    {% import _self as _this %}
+    {% if prototype is defined and not prototype.rendered %}
+        {%- set attr = attr|merge({'data-prototype': form_widget(prototype) }) -%}
+    {% endif %}
+        {% set widgetName = "" %}
+        {% if form|length > 0 %}
+        {% set widgetName = form[0].vars.id~'-collection-widget' %}
+        {% endif %}
+            <ul id="{{widgetName}}" class="dynamic collection" style="list-style:none;"  data-index="{{form.vars.data.getKeys|length}}" data-prototype="{{ attr['data-prototype'] }}">
+                {% if form|length > 0 and form[0].vars.gridList is defined and form[0].vars.gridList.columns is defined %}
+                    {{_this.files_grid(form)}}
+                {% elseif form|length > 0 and form[0].vars.grouped is defined %}
+                    {{_this.files_grouped(form)}}
+                {% else %}
+                    {% for i in form %}
+                        {{ form_widget(i) }}
+                    {% endfor %}
+                {% endif %}
+
+
+                <li>
+                  <button type="button" class="btn btn-secondary btn-elevate add" data-list-selector="#{{widgetName}}">{{ "aircraft.form.add_button_files"|trans }}</button>
+                </li>
+            </ul>
+{%- endblock collection_widget -%}
+
+{%- block file_input_collection_widget -%}
+    <li class="file-list-el">
+
+{{block('file_input_widget')}}
+    {% if form.vars is not defined or form.vars.value is null %}
+        <button type="button" class="btn btn-delete btn-elevate">x</button>
+    {% endif %}
+    </li>
+{%- endblock file_input_collection_widget -%}
+
+{%- block file_input_widget -%}
+    <div class="row" style="display: inline-block;" data-file-container="{% if form.vars.data.id is defined %}{{form.vars.data.id}}{%else%}new{%endif%}_el">
+      <div class="col-lg-12 col-md-12 col-sm-12">
+    {#{dump(form)}#}<br>
+    {% for vnom in ['bnomType1','bnomType2','bnomType3','bnomType4','issuedOn','validFrom','validTo','customName'] %}
+      {% set fnom = form[vnom] is defined?form[vnom]:null %}
+      {% if _context[vnom] is defined and _context[vnom].enabled is defined and _context[vnom].enabled == true %}
+        {% if fnom.vars.label is defined and fnom.vars.label is not null %}
+          <div class="col-file-bnomtype">
+              <span>{{ form_label(fnom)}}</span>
+              <span style="display:inline-block;">
+              {{ form_widget(fnom) }}
+              {{ form_errors(fnom) }}
+              </span>
+          </div>
+        {% else %}
+        <div class="col-file-bnomtype">
+              {{ form_widget(fnom) }}
+              {{ form_errors(fnom) }}
+        </div>
+        {% endif %}
+      {% endif %}
+    {% endfor %}
+
+
+    <div class="file-upload-field"{% if form.vars.data is not null %} style="display:none;"{% endif %}>
+          {{ form_widget(form.dummyField) }}{#DO NOT REMOVE DUMMY FIELD. auto Mapping fails#}
+          {{ form_widget(form.fileName) }}
+          {{ form_errors(form.fileName) }}
+    </div>
+      {% if form.vars.data is not null and form.vars.data.id is not null %}
+      <div class="file-display">
+        <span class="col-lg-9 col-md-9 col-sm-9">
+        {#% if 'image' in form.vars.data.mimeType %}
+          <img src="{{path('file_bundle_get_file',{file: form.vars.data.id})}}" alt="{{form.vars.data.name}}" style="max-width:90%;"/>
+        {% else %#}
+          <a href="{{path('file_bundle_get_file',{file: form.vars.data.id})}}" alt="Download {{form.vars.data.name}}" target="_blank">{{form.vars.data.name}}</a>
+        {#% endif %#}
+        </span>
+        {% if form.parent.parent.vars.data is defined and form.parent.parent.vars.data.id is defined %}
+          {% set seid = form.parent.parent.vars.data.id %}
+        {% elseif form.parent.vars.data.id is defined %}
+          {% set seid = form.parent.vars.data.id %}
+        {% else %}
+          {% set seid = -1 %}
+        {% endif %}
+        {% if  form.vars.hideDelete is empty%}
+            <span class="col-lg-3 col-md-3 col-sm-3 align-top">
+              <a href="javascript:void(0)" data-delete-link="{{path('file_bundle_del_file', {file:form.vars.data.id, 'eid':seid})}}" data-id="{{form.vars.data.id}}" data-file-name="{{form.vars.data.name}}" style="font-size: 24px;" title="{{'label.delete_file'|trans}}">
+                <i class="la la-times-circle-o"></i>
+              </a>
+            </span>
+        {% endif %}
+      </div>
+      <br clear="both"/>
+      {% endif %}
+      </div>
+    </div>
+{%- endblock file_input_widget -%}
+
+{%- block file_upload_widget -%}
+    {{form_widget(form)}}
+{%- endblock file_upload_widget -%}
+
+{%- block file_preview_widget -%}
+<div class="typeahead form-control">
+    <a target="_blank" href="{{path(form.vars.url, {'id':form.parent.vars.data.id})}}" style="opacity:1"><span class="la la-external-link"></span></a>
+    {{ form.parent.vars.data.getFileName() }}
+</div>
+{%- endblock file_preview_widget -%}
+{# END FILES ============================================================================================================  #}
+
+
+{#=====================SwitchType======================#}
+{%- block switch_widget -%}
+    {% if form.vars.switch is not empty %}
+    <span class="k-switch k-switch--icon">
+        <label>
+            <input type="checkbox" {{ block('widget_attributes') }}{% if value is defined %} value="{{ value }}"{% endif %}{% if checked %} checked="checked"{% endif %} />
+            <span></span>
+        </label>
+    </span>
+    {% else %}
+        <input type="checkbox" {{ block('widget_attributes') }}{% if value is defined %} value="{{ value }}"{% endif %}{% if checked %} checked="checked"{% endif %} />
+    {% endif %}
+{%- endblock switch_widget -%}
+{#=====================CourseElementsType======================#}
+
+{%- block course_elements_widget -%}
+    {{form_widget(form)}}
+    {% javascripts '@BaseBundle/Resources/public/js/course_elements.js' filter='?uglifyjs2' output='widget/ce.js'%}
+        <script src="{{ asset_url }}?r={{ver}}" type="text/javascript"></script>
+    {% endjavascripts %}
+    <script type="text/javascript">course_elements('#'+'{{form.vars.id}}','{{path('course_exercise_elements',{exercise:'__exercise_id__'})}}');</script>
+    <span class="course_exercise_elements_tpl" data-prototype="{{block('exercises_template_tmp_widget')|e('html_attr')}}" ></span>
+{%- endblock course_elements_widget -%}
+
+{% block exercises_template_tmp_widget %}
+    <div class="row col-lg-9 col-md-9 col-sm-12 exercise">
+        <label class="k-checkbox input-info col-form-label col-lg-12 col-sm-12">__element_name__<input type="checkbox"  /><span></span></label>
+        <input type="hidden" disabled="disabled" value="__value__" name="{{form.parent.vars.full_name}}[__key__]" />
+    </div>
+{% endblock exercises_template_tmp_widget %}
+
+{#=====================END CourseElementsType======================#}
+
+{#=====================PercentType======================#}
+{% block percent_widget %}
+    <div class="input-percent input-percent-direct"><input{{ block('widget_attributes') }} value="{%if form.vars.data==0%}0{%else%}{{form.vars.data|trim('0')|trim('.')}}{%endif%}"></div>
+{% endblock percent_widget %}
+{#=====================END PercentType======================#}
+
+{#=====================PercentType======================#}
+
+{#=====================END PercentType======================#}

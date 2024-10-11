@@ -1,0 +1,285 @@
+{% extends 'base.html.twig' %}
+{% import 'base_datatable.html.twig' as datatable %}
+{% block title %}{{'nomtype.nomtypes'|trans}}{% endblock %}
+
+{% block content_body %}
+<!-- begin:: Content Body -->
+<div class="k-content__body    k-grid__item k-grid__item--fluid" id="k_content_body">
+    <div class="k-portlet k-portlet--mobile">
+        <div class="k-portlet__head">
+            <div class="k-portlet__head-label" id="bnom_head">
+                <h3 class="k-portlet__head-title">
+                    {{'nomtype.nomtypes_list'|trans}}
+                </h3> &nbsp;
+            </div>
+            <div class="k-portlet__head-label">
+            <a href="{{path('nom_type_new')}}" class="btn btn-sm btn-elevate btn-brand">
+                <i class="flaticon2-add-1 k-padding-l-5 k-padding-r-0"></i>
+                <span class="k-font-bold">{{'label.addNew'|trans}}</span>&nbsp;
+            </a>
+            </div>
+        </div>
+        <div class="k-portlet__body main">
+            <div class="k-portlet">
+                <div class="row" data-sticky-container="">
+                <div class="col-lg-3 col-xl-3">
+                    <div class="k-portlet" data-sticky="false" data-margin-top="100" data-sticky-for="1023" data-sticky-class="k-sticky" style="">
+                        <div class="k-portlet__body" id="bnom_tree">
+                            <input id="jsnomtree_search" placeholder="Search tree...">
+                            <div id="jsnomtree"> Loading tree...</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-7 col-xl-9">
+                    <div class="k-portlet" id="grid_body">
+                        <div class="k-portlet__body">
+                    {{ datatable.html_block(table) }}
+                </div>
+                    </div>
+                </div>
+            </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- end:: Content Body -->
+<style type="text/css">
+.dataTables_wrapper .dataTable tr.deleted td:last-child {
+    background: white;
+    text-decoration: none;
+}
+.dataTables_wrapper .dataTable tr.deleted {
+    background: lightgray;
+}
+.dataTables_wrapper .dataTable tr.deleted td {
+    color: gray;
+    text-decoration: line-through;
+}
+#grid_body {
+    position: sticky;
+    background: whitesmoke;
+    top: calc(100vh - 327px);
+}
+</style>
+<script>
+$(document).ready( function() {
+    function updateTableContainerPosition() {
+        var $tableContainer = $('#grid_body'),
+            containerHeight = parseInt($tableContainer.height());
+        if ($(window).height() > containerHeight) {
+            $tableContainer.css('top', $('#k_header').height());
+        } else {
+            $tableContainer.css('top', 'calc(100vh - ' + containerHeight + 'px)');
+        }
+    }
+
+    $(window).bind('scroll resize', updateTableContainerPosition);
+
+/*    $('.nomtree').fileTree({
+            root: '/',
+            script: '{{path('nom_tree')}}',
+            expandSpeed: 1000,
+            collapseSpeed: 1000,
+            multiFolder: false
+        }, function(file) {
+            alert(file);
+        });
+*/
+    var lastLoadedGrid=null;
+
+    $('#jsnomtree').jstree({
+        'core' : {
+            'multiple' : false,
+            'animation' : false,
+            'dblclick_toggle': false,
+            'data' : {
+                //https://www.jstree.com/docs/json/
+                'url' : function (node) {
+                    return '{{path('getNomTree', nomtree_filters)}}';//?lpid={{lpid|default(null)}}';
+                /*
+                    return node.id === '#' ?
+                    'ajax_roots.json' :
+                    'ajax_children.json';
+                */
+                },
+                'data' : function (node) {
+                    d = { 'id' : node.id };
+                    {% if lpid is defined%}
+                    d['lpid']={{lpid}};
+                    {% endif %}
+                    {% if ltype is defined %}
+                    d['ltype'] = '{{ltype}}';
+                    {% endif %}
+                    return d;
+                }
+            },
+            'themes': {
+                'url': true,
+                'dir': '{{path('nom_tree')}}/../..//bundles/onebookbase/js/jstree/themes/',
+            },
+        },
+        'plugins': ['search','contextmenu','state',],
+        'contextmenu':{
+            'items': function($node) {
+                return {
+                    "Create": {
+                        "separator_before": true,
+                        "separator_after": true,
+                        "label": "Create Sub element",
+                        "action": function (obj) {
+                            console.log('New element with parent: ', $node.id);
+                            top.location.href='{{path('nom_type_new')}}?parent='+$node.id+'';
+                            //$node = tree.create_node($node);
+                            //tree.edit($node);
+                        },
+                    },
+                    "Create1": {
+                        "separator_before": false,
+                        "separator_after": true,
+                        "label": "Create same type",
+                        "action": function (obj) {
+                            console.log('New element with type: ', $node.data);
+                            if ($node.id != '#' && $node.data.parent_id && $node.data.parent_id)
+                                top.location.href='{{path('nom_type_new')}}?parent='+$node.data.parent_id+'';
+                            else
+                                top.location.href='{{path('nom_type_new')}}?type='+$node.data.type+'';
+                            //$node = tree.create_node($node);
+                            //tree.edit($node);
+                        },
+                    },
+                    "Edit": {
+                        "separator_before": false,
+                        "separator_after": true,
+                        "label": "Edit element",
+                        "action": function (obj) {
+                            if ($node.id != '#' && $node.id) // && $node.id.match(/[\d]+/))
+                                top.location.href='{{path('nom_type_edit', {'id': '__id__'})}}'.replace('__id__',$node.id);
+                            else
+                                alert("Can't edit root!");
+                                //top.location.href='{{path('nom_type_new')}}?type='+$node.data.type+'';
+                            //$node = tree.create_node($node);
+                            //tree.edit($node);
+                        },
+                    },
+                    {% if is_granted('ROLE_ADMIN') %}
+                    "Copy": {
+                        "separator_before": false,
+                        "separator_after": true,
+                        "label": "Copy tree",
+                        "action": function (obj) {
+                            if ($node.id != '#' && $node.id) // && $node.id.match(/[\d]+/))
+                                top.location.href='{{path('nom_type_copy', {'id': '__id__'})}}'.replace('__id__',$node.id);
+                            else
+                                alert("Can't edit root!");
+                                //top.location.href='{{path('nom_type_new')}}?type='+$node.data.type+'';
+                            //$node = tree.create_node($node);
+                            //tree.edit($node);
+                        },
+                    },
+                    "Del": {
+                        "separator_before": false,
+                        "separator_after": true,
+                        "label": "Delete element",
+                        "action": function (obj) {
+                            //if ($node.id != '#' && $node.id && $node.id.match(/[\d]+/) && confirm('REALLY Delete this node?') && confirm('All the children will also be deleted!\nI hope you are sure???') && confirm('Well... ok. Last time. This will delete this node with ALL IT\'S CHILDREN!')) {
+                            if ($node.id != '#' && $node.id && confirm('REALLY Delete this node?') && confirm('All the children will also be deleted!\nI hope you are sure???') && confirm('Well... ok. Last time. This will delete this node with ALL IT\'S CHILDREN!')) {
+                                sendQeury('{{path('nom_type_delete', {'id':'__id__'})}}'.replace('__id__',$node.id)
+                                    ).done(function(data) {
+                                    if ('success' in data) {
+                                        sysMsg.show({'title':'Deleted node(s)', 'body':'Node with all children deleted!', 'displayType':'toastr', 'severity': 'success'});
+                                        jQuery('#jsnomtree').jstree(true).refresh(true);
+                                    } else {
+                                        //alert(data['msg']);
+                                        sysMsg.show({'title':'Error Deleting node(s)', 'body':'Error deleting nodes: '+data['errorMsg'], 'severity': 'error'});
+                                    }
+                                }).fail(function(jqXHR, textStatus) {
+                                    sysMsg.show({'title':'Error Deleting node(s)', 'body':'Error deleting nodes: '+textStatus, 'severity': 'error'});
+                                });
+                            }
+                            else
+                                alert("Can't delete root!");
+                                //top.location.href='{{path('nom_type_new')}}?type='+$node.data.type+'';
+                            //$node = tree.create_node($node);
+                            //tree.edit($node);
+                        },
+                    },
+                    {% endif %}
+                };
+            }
+        },
+    })
+    .on('changed.jstree', function (e, data) {
+        function loadGrid(loadData) {
+            if (JSON.stringify(lastLoadedGrid) != JSON.stringify(loadData)) {
+                lastLoadedGrid = loadData;
+                DT_BaseBundle_Entity_NomType.changeAJAXParemeter('spnameKey', loadData.toString().replace('{{dotSeparator}}','.'), true);
+                DT_BaseBundle_Entity_NomType.one('draw', updateTableContainerPosition);
+                /*
+                console.log(JSON.stringify(lastLoadedGrid), JSON.stringify(loadData));
+                //console.log('selected ',data.selected, data)
+                console.log('ldg',lastLoadedGrid, loadData);
+                setTimeout(function(){
+                    $('#id_BaseBundle_Entity_NomType').dataTable().api().ajax.url('{{path('nom_type_index')}}?spnameKey='+loadData.toString().replace('{{dotSeparator}}','.'));
+                    $('#id_BaseBundle_Entity_NomType').DataTable().draw(false);
+                    lastLoadedGrid = loadData;
+                    var selel=parseInt($('#'+loadData).offset().top)-200;//($(document).height()/4));
+                    // if not visible - scroll to
+                    if (!isScrolledIntoView($('#'+loadData)))
+                        $('html,body').animate({scrollTop: selel })
+                },1000);
+                */
+            }
+        }
+        if (data) {
+            if(data && data.selected && data.selected.length == 1) {
+                loadGrid(data.selected)
+            } else if(data && data.selected && data.selected.length > 1) {
+                loadGrid(data.selected[0]);
+            } else {
+                $('#data .content').hide();
+                $('#data .default').text('Select a file from the tree.').show();
+            }
+            // scroll into view selected.
+            //var jstree = document.getElementById('jstree');
+            //jstree.scrollTop = findPos( e ) - jstree.offsetHeight/2;
+            //$('#jsnomtree').scrollTop = e;//.scrollIntoView();
+
+            //$('#jsnomtree').jstree().get_selected(true)[0].id
+
+        }
+    });
+    ;
+  // hide grid on right when clicked in tree div unless link clicked.
+  $('#grid_body').hide();$('#bnom_tree').on('click', function(e) { if(e.target.closest('a')) $('#grid_body').show(); else $('#grid_body').hide(); });
+  var to = false;
+  $('#jsnomtree_search').keyup(function () {
+    if(to) { clearTimeout(to); }
+    to = setTimeout(function () {
+      var v = $('#jsnomtree_search').val();
+      $('#jsnomtree').jstree(true).search(v);
+    }, 250);
+  });
+  $('a.addChildNom').on('click', function(){
+    alert($(this).data('parent-id'));
+  })
+});
+</script>
+
+{% endblock content_body %}
+
+
+{% block javascripts %}
+    {{ parent() }}
+{% javascripts filter='uglifyjs2'
+    '@BaseBundle/Resources/public/js/jstree/jstree.min.js'
+    output='js/nomtype_index.js'
+%}
+<script type="text/javascript" src="{{ asset_url }}?r={{ver}}"></script>
+{% endjavascripts %}
+
+{{ datatable.script_block(table) }}
+{% javascripts '@filters'%}
+    <script src="{{ asset_url }}?r={{ver}}" type="text/javascript"></script>
+{% endjavascripts %}
+{% endblock %}
